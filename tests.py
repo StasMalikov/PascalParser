@@ -1,11 +1,9 @@
 data = '''
 program myprog;
 var 
-    a,b,c,d : integer;
+    d : integer;
     i : Boolean;
-
-function notcoprime(M,N: integer): Boolean;
-
+    
 begin
     a := 1;
     b := -2;
@@ -13,8 +11,7 @@ begin
     d := a - b;
 
     if c > d
-    then i:= true
-    else i:= false;
-
+    then i := true
+    else i := false;
 end;
 '''

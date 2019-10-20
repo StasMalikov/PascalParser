@@ -26,7 +26,9 @@ tokens = [
     'COLON',
     'SQUOTE',
     'QUOTE',
-    'COMMA'
+    'COMMA',
+    'OR', 
+    'AND',
 ]
 
 reserved = {
@@ -80,6 +82,8 @@ t_COLON = r'\:'
 t_SQUOTE = r'\''
 t_QUOTE = r'\"'
 t_COMMA = r'\,'
+t_OR = r'\|'
+t_AND = r'&'
 
 t_ignore = ' \r\t'
 
@@ -135,7 +139,8 @@ def p_statement(t):
     '''statement : expr_statement
                  | block
                  | selection_statement
-                 | iteration_statement'''
+                 | iteration_statement
+                 | var_block'''
     t[0] = t[1]
 
 def p_expr_statement(t):
@@ -163,6 +168,28 @@ def p_expression(t):
                   | function
                   | identification'''
     t[0] = t[1]
+
+def p_logical_expression(t):
+    'logical_expression : logical_or_expression'
+    t[0] = t[1]
+
+
+def p_logical_or_expression(t):
+    '''logical_or_expression : logical_and_expression
+                             | logical_or_expression OR logical_and_expression'''
+    if len(t) > 2:
+        t[0] = BinOpNode(BinOp(t[2]), t[1], t[3])
+    else:
+        t[0] = t[1]
+
+
+def p_logical_and_expression(t):
+    '''logical_and_expression : equality_expression
+                              | logical_and_expression AND equality_expression'''
+    if len(t) > 2:
+        t[0] = BinOpNode(BinOp(t[2]), t[1], t[3])
+    else:
+        t[0] = t[1]
 
 def p_equality_expression(t):
     '''equality_expression : relational_expression
@@ -206,7 +233,7 @@ def p_multiplicative_expression(t):
 def p_unary_expression(t):
     '''unary_expression : group
                         | NOT group
-                        | SUB group'''
+                        | MINUS group'''
     if len(t) > 2:
         t[0] = UnOpNode(UnOp(t[1]), t[2])
     else:
