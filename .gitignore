@@ -1,5 +1,5 @@
 ply/
 __pycache__
 *.out
-parsetab
+parsetab.py
 ast_nodes

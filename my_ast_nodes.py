@@ -7,7 +7,12 @@ class Tree:
         print("...")
         for i in self.nodes:
             if i.classtype == "ident":
-                print("├ " + i._type)
+                if len(i._type.split(' ')) > 1 :
+                    x = i._type.split()
+                    print("├ array [ 1 .. " + x[0] + " ] of "+ " " + x[1])
+                else:
+                    print("├ " + i._type)
+                    
                 for j in range(len(i.values)):
                     if j == len(i.values)-1:
                         print("│  └ " + i.values[j])

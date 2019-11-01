@@ -175,12 +175,13 @@ def p_error(t):
 
 data = '''
       var
-      a : integer;  
-      b : char;
+      a, asap : integer;  
+      b, asasas, asdafsf : char;
       c, d : array [1 .. 3] of integer;
     '''
 
 parser = yacc.yacc()
-parser.parse(data, debug=True)
+# parser.parse(data, debug=True)
+parser.parse(data)
 
 mytree.print_tree()
