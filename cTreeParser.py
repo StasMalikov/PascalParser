@@ -25,10 +25,13 @@ tokens = [
     'QUOTE',
     'COMMA',
     'OR', 
-    'AND'
+    'AND',
+    'DOTDOT'
 ]
 
 reserved = {
+    'of': 'OF',
+    'array': 'ARRAY',
     'while': 'WHILE',
     'do': 'DO',
     'write': 'WRITE',
@@ -60,6 +63,7 @@ reserved = {
 
 tokens += reserved.values()
 
+t_DOTDOT = r'\.\.'
 t_PLUS = r'\+'
 t_ASSIGN = r'\:='
 t_LPAREN = r'\('
@@ -119,13 +123,16 @@ def t_error(t):
 
 
 lexer = lex.lex()
+def p_identification_block(t):
+    '''identification_block : VAR identification_list'''
 
 def p_identification_list(t):
     '''identification_list : 
                            | identification_list identification'''
 
 def p_identification(t):
-    '''identification : ident_list COLON type SEMICOLON'''
+    '''identification : ident_list COLON type SEMICOLON
+                      | ident_list COLON type_arr SEMICOLON'''
     mytree.nodes.append(my_ast_nodes.IdentificationNode(mytree.idents,t[3]))
     mytree.idents = []
 
@@ -148,6 +155,11 @@ def p_ident(t):
     '''ident : IDENT'''
     t[0]=t[1]
 
+def p_type_arr(t):
+    '''type_arr : ARRAY LBRACE NUMBER DOTDOT NUMBER RBRACE OF type'''
+    t[0] = str(t[5]) +' '+ t[8]
+
+
 def p_type(t):
     '''type : INT
             | BOOL
@@ -162,8 +174,10 @@ def p_error(t):
 
 
 data = '''
+      var
       a : integer;  
       b : char;
+      c, d : array [1 .. 3] of integer;
     '''
 
 parser = yacc.yacc()

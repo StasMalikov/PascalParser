@@ -4,10 +4,15 @@ class Tree:
         self.idents = []
 
     def print_tree(self):
+        print("...")
         for i in self.nodes:
             if i.classtype == "ident":
-                print(i._type)
-                print(i.values)
+                print("├ " + i._type)
+                for j in range(len(i.values)):
+                    if j == len(i.values)-1:
+                        print("│  └ " + i.values[j])
+                    else:
+                        print("│  ├ " + i.values[j])
 
 
 class IdentificationNode:

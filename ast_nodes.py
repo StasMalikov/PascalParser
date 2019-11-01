@@ -66,18 +66,18 @@ class BoolValueNode(ValueNode):
 
 
 class BinOp(Enum):
-    PLUS = '+'
-    MINUS = '-'
+    ADD = '+'
+    SUB = '-'
     MUL = '*'
-    FSLASH = '/'
+    DIV = '/'
     GE = '>='
     LE = '<='
+    NOTQUALS = '!='
     EQUALS = '='
     GT = '>'
     LT = '<'
-    DIV = 'div'
-    MOD = 'mod'
-
+    BIT_OR = '|'
+    BIR_AND = '&'
 
 
 class BinOpNode(ValueNode):
@@ -96,8 +96,8 @@ class BinOpNode(ValueNode):
 
 
 class UnOp(Enum):
-    NOT = 'not'
-    MINUS = '-'
+    NOT = '!'
+    SUB = '-'
 
 
 class UnOpNode(ValueNode):
@@ -141,10 +141,10 @@ class AssignNode(ValueNode):
         return self.var, self.val
 
     def __str__(self)->str:
-        return ':='
+        return '='
 
 
-class WriteNode(AstNode):
+class OutputNode(AstNode):
     def __init__(self, arg: ValueNode):
         self.arg = arg
 
@@ -153,10 +153,10 @@ class WriteNode(AstNode):
         return self.arg,
 
     def __str__(self)->str:
-        return 'write'
+        return 'cout'
 
 
-class ReadNode(AstNode):
+class InputNode(AstNode):
     def __init__(self, var: IdentNode):
         self.var = var
 
@@ -165,7 +165,7 @@ class ReadNode(AstNode):
         return self.var,
 
     def __str__(self)->str:
-        return 'read'
+        return 'cin'
 
 
 class IfNode(AstNode):
@@ -185,14 +185,15 @@ class IfNode(AstNode):
         return 'if'
 
 class ForNode(AstNode):
-    def __init__(self, init: AstNode, finish: ValueNode, body: AstNode):
+    def __init__(self, init: AstNode, cond: ValueNode, step: AstNode, body: AstNode):
         self.init = init
-        self.finish = finish
+        self.cond = cond
+        self.step = step
         self.body = body
 
     @property
     def childs(self) -> Tuple[ValueNode]:
-        return self.init, self.finish, self.body
+        return self.init, self.cond, self.step, self.body
 
     def __str__(self)->str:
         return 'for'
@@ -222,44 +223,3 @@ class DoWhileNode(AstNode):
 
     def __str__(self)->str:
         return 'do while'
-
-
-class IdentificationNode(AstNode):
-    def __init__(self,name: ValueNode, type_: str):
-        self.type_ = type_
-        self.name = name
-
-    @property
-    def childs(self) -> Tuple[ValueNode]:
-        res = [self.name, ]
-        return res
-
-    def __str__(self)->str:
-        return str(self.type_)
-
-class IdentificationListNode(AstNode):
-    def __init__(self, *exprs: AstNode):
-        super().__init__()
-        self.exprs = exprs
-
-    @property
-    def childs(self) -> Tuple[AstNode]:
-        return self.exprs
-
-    def add_child(self, ch):
-        self.exprs = self.exprs + (ch,)
-
-    def __str__(self)->str:
-        return '...'
-
-class VarIdentificationNode(AstNode):
-    def __init__(self, body: AstNode):
-        self.body = body
-
-
-    @property
-    def childs(self) -> Tuple[ValueNode]:
-        return self.body
-
-    def __str__(self)->str:
-        return 'var'
