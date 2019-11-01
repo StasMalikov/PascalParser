@@ -1,5 +1,8 @@
-import tests
-import lexer
+from cTreeParser import *
 import os
 
-print(lexer.build_tree(tests.data), sep=os.linesep)
+s = '''
+
+    int с :=  a + b;
+    '''
+print(*build_tree(s), sep=os.linesep)
