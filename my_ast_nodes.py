@@ -2,6 +2,16 @@ class Tree:
     def __init__(self):
         self.nodes = []
         self.idents = []
+
+    def print_expression(self, node, attachment):
+        if attachment > 0:
+            print("│" + " "*attachment + "└ " + node.operator)
+            print("│" + " "*attachment + "  ├ " + node.value1)
+            print("│" + " "*attachment + "  └ " + node.value2)
+        else:
+            print("│  └ " + node.operator)
+            print("│    ├ " + node.value1)
+            print("│    └ " + node.value2)
     
     def print_identification(self, node, attachment, last):
         if attachment > 0:
@@ -58,14 +68,14 @@ class Tree:
                 else:
                     self.print_identification(self.nodes[i], attachment, False)
             
-            # if self.nodes[i].classtype == "block":
-            #     for j in range(len(self.nodes[i].body)):
+            if self.nodes[i].classtype == "block":
+                for j in range(len(self.nodes[i].body)):
+                    if self.nodes[i].body[j].classtype == "expr":
+                        self.print_expression(self.nodes[i].body[j], attachment)
                     
-                
-
 class Block:
-    def __init__(self):
-        self.body = []
+    def __init__(self, body):
+        self.body = body
         self.classtype = "block"
 
 class IdentificationNode:
@@ -73,3 +83,27 @@ class IdentificationNode:
         self.classtype = "ident"
         self._type = _type
         self.values = values
+
+class ExpressionNode:
+    def __init__(self, value1, op, value2):
+        self.classtype = "expr"
+        self.value1 = value1
+        self.value2 = value2
+        self.operator = op
+
+class ExpressionNodeList:
+    def __init__(self):
+        self.expr_list = []
+
+class Unary:
+    @staticmethod
+    def define(oper, value):
+        if oper == "-":
+            return oper + value
+        
+        if oper == "not":
+            if value == "true":
+                return "false"
+
+            if value == "false":
+                return "true"

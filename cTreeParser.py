@@ -134,7 +134,46 @@ def p_blocks_list(t):
     '''
 
 def p_block_dot(t):
-    '''block_dot : BEGIN END DOT'''
+    '''block_dot : BEGIN expression_list END DOT'''
+    mytree.nodes.append(my_ast_nodes.Block(t[2].expr_list))
+
+def p_expression_list(t):
+    '''expression_list : 
+                       | expression_list multiplicative_expression SEMICOLON'''
+    if len(t) > 2:
+        t[0].expr_list.append(t[2])
+    else: 
+        t[0] = my_ast_nodes.ExpressionNodeList()
+
+def p_multiplicative_expression(t):
+    '''multiplicative_expression : unary_expression
+                                 | multiplicative_expression MUL unary_expression
+                                 | multiplicative_expression FSLASH unary_expression
+                                 | multiplicative_expression MOD unary_expression
+                                 | multiplicative_expression DIV unary_expression'''
+    if len(t) > 2:
+        t[0] = my_ast_nodes.ExpressionNode(t[1], t[2], t[3])
+    else:
+        t[0] = t[1]
+
+
+def p_unary_expression(t):
+    '''unary_expression : group
+                        | NOT group
+                        | MINUS group'''
+    if len(t) > 2:
+        t[0] = my_ast_nodes.Unary.define(t[1], t[2])
+    else:
+        t[0] = t[1]
+
+def p_group(t):
+    '''group : ident
+             | NUMBER
+             | BOOL'''
+    t[0] = t[1]
+
+
+# -------------------------------------------------------------------------------------------
 
 def p_identification_block(t):
     '''identification_block : VAR identification_list'''
@@ -185,18 +224,19 @@ def p_error(t):
     prog = None
 
 
-
+    #   var
+    #   a, asap : integer;  
+    #   b, asasas, asdafsf : char;
+    #   c, d : array [1 .. 3] of integer;
 data = '''
-      var
-      a, asap : integer;  
-      b, asasas, asdafsf : char;
-      c, d : array [1 .. 3] of integer;
-
+      begin
+      a * b;
+      end.
 
     '''
 
 parser = yacc.yacc()
-# parser.parse(data, debug=True)
-parser.parse(data)
+parser.parse(data, debug=True)
+# parser.parse(data)
 
 mytree.print_tree()
