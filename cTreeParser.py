@@ -26,7 +26,8 @@ tokens = [
     'COMMA',
     'OR', 
     'AND',
-    'DOTDOT'
+    'DOTDOT',
+    'DOT'
 ]
 
 reserved = {
@@ -63,6 +64,7 @@ reserved = {
 
 tokens += reserved.values()
 
+t_DOT = r'\.'
 t_DOTDOT = r'\.\.'
 t_PLUS = r'\+'
 t_ASSIGN = r'\:='
@@ -89,6 +91,7 @@ t_AND = r'&'
 t_ignore = ' \r\t'
 
 mytree = my_ast_nodes.Tree()
+blocks = []
 
 def t_IDENT(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -123,6 +126,16 @@ def t_error(t):
 
 
 lexer = lex.lex()
+
+def p_blocks_list(t):
+    '''blocks_list : 
+                   | blocks_list block_dot
+                   | blocks_list identification_block
+    '''
+
+def p_block_dot(t):
+    '''block_dot : BEGIN END DOT'''
+
 def p_identification_block(t):
     '''identification_block : VAR identification_list'''
 
@@ -178,6 +191,8 @@ data = '''
       a, asap : integer;  
       b, asasas, asdafsf : char;
       c, d : array [1 .. 3] of integer;
+
+
     '''
 
 parser = yacc.yacc()

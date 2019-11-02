@@ -44,6 +44,10 @@ class Tree:
                 else:
                     print("│  ├ " + node.values[j])
 
+    def print_tree_recursion(self, attachment, nodes_rec):
+        pass
+
+
     def print_tree(self):
         print("...")
         attachment = 0
@@ -53,11 +57,15 @@ class Tree:
                     self.print_identification(self.nodes[i], attachment, True)
                 else:
                     self.print_identification(self.nodes[i], attachment, False)
+            
+            # if self.nodes[i].classtype == "block":
+            #     for j in range(len(self.nodes[i].body)):
+                    
                 
 
 class Block:
-    def __init__(self,body):
-        self.body=body
+    def __init__(self):
+        self.body = []
         self.classtype = "block"
 
 class IdentificationNode:
