@@ -2,6 +2,8 @@ class Tree:
     def __init__(self):
         self.nodes = []
         self.idents = []
+        self.begin_index = 0
+        self.expr_list = []
 
     def print_expression(self, node, attachment):
         if attachment > 0:

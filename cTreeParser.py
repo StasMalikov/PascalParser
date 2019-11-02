@@ -134,16 +134,18 @@ def p_blocks_list(t):
     '''
 
 def p_block_dot(t):
-    '''block_dot : BEGIN expression_list END DOT'''
-    mytree.nodes.append(my_ast_nodes.Block(t[2].expr_list))
+    '''block_dot : begin expression_list END DOT'''
+    mytree.nodes.append(my_ast_nodes.Block(mytree.expr_list.pop().expr_list))
+    mytree.begin_index -= 1
 
 def p_expression_list(t):
     '''expression_list : 
                        | expression_list multiplicative_expression SEMICOLON'''
-    if len(t) > 2:
-        t[0].expr_list.append(t[2])
-    else: 
-        t[0] = my_ast_nodes.ExpressionNodeList()
+    # if len(t) > 2:
+    #     t[0] = str(t[0]) + str(t[2])
+        # .expr_list.append(t[2])
+    # else: 
+    #     t[0] = my_ast_nodes.ExpressionNodeList()
 
 def p_multiplicative_expression(t):
     '''multiplicative_expression : unary_expression
@@ -152,7 +154,7 @@ def p_multiplicative_expression(t):
                                  | multiplicative_expression MOD unary_expression
                                  | multiplicative_expression DIV unary_expression'''
     if len(t) > 2:
-        t[0] = my_ast_nodes.ExpressionNode(t[1], t[2], t[3])
+         mytree.expr_list[-1].expr_list.append(my_ast_nodes.ExpressionNode(t[1], t[2], t[3]))
     else:
         t[0] = t[1]
 
@@ -172,6 +174,10 @@ def p_group(t):
              | BOOL'''
     t[0] = t[1]
 
+def p_begin(t):
+    ''' begin : BEGIN'''
+    mytree.begin_index += 1
+    mytree.expr_list.append(my_ast_nodes.ExpressionNodeList())
 
 # -------------------------------------------------------------------------------------------
 
@@ -224,13 +230,16 @@ def p_error(t):
     prog = None
 
 
-    #   var
-    #   a, asap : integer;  
-    #   b, asasas, asdafsf : char;
-    #   c, d : array [1 .. 3] of integer;
+
 data = '''
+      var
+      a, asap : integer;  
+      b, asasas, asdafsf : char;
+      c, d : array [1 .. 3] of integer;
+
       begin
       a * b;
+      c / d;
       end.
 
     '''
