@@ -245,7 +245,7 @@ data = '''
     '''
 
 parser = yacc.yacc()
-parser.parse(data, debug=True)
-# parser.parse(data)
+# parser.parse(data, debug=True)
+parser.parse(data)
 
 mytree.print_tree()

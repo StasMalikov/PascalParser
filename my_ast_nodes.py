@@ -5,15 +5,21 @@ class Tree:
         self.begin_index = 0
         self.expr_list = []
 
-    def print_expression(self, node, attachment):
+    def print_expression(self, node, attachment, last):
         if attachment > 0:
-            print("│" + " "*attachment + "└ " + node.operator)
-            print("│" + " "*attachment + "  ├ " + node.value1)
-            print("│" + " "*attachment + "  └ " + node.value2)
+            if last:
+                print("│" + " "*attachment + "└ " + node.operator)
+                print("│" + " "*attachment + "  ├ " + node.value1)
+                print("│" + " "*attachment + "  └ " + node.value2)
+            else:
+                print("│" + " "*attachment + "├ " + node.operator)
+                print("│" + " "*attachment + "│ ├ " + node.value1)
+                print("│" + " "*attachment + "│ └ " + node.value2)
+                
         else:
-            print("│  └ " + node.operator)
-            print("│    ├ " + node.value1)
-            print("│    └ " + node.value2)
+            print("├ " + node.operator)
+            print("│ ├ " + node.value1)
+            print("│ └ " + node.value2)
     
     def print_identification(self, node, attachment, last):
         if attachment > 0:
@@ -52,9 +58,9 @@ class Tree:
 
             for j in range(len(node.values)):
                 if j == len(node.values) - 1:
-                    print("│  └ " + node.values[j])
+                    print("│ └ " + node.values[j])
                 else:
-                    print("│  ├ " + node.values[j])
+                    print("│ ├ " + node.values[j])
 
     def print_tree_recursion(self, attachment, nodes_rec):
         pass
@@ -62,7 +68,7 @@ class Tree:
 
     def print_tree(self):
         print("...")
-        attachment = 0
+        attachment = 1
         for i in range(len(self.nodes)):
             if self.nodes[i].classtype == "ident":
                 if i == len(self.nodes) - 1:
@@ -73,7 +79,11 @@ class Tree:
             if self.nodes[i].classtype == "block":
                 for j in range(len(self.nodes[i].body)):
                     if self.nodes[i].body[j].classtype == "expr":
-                        self.print_expression(self.nodes[i].body[j], attachment)
+                        if j == len(self.nodes[i].body) - 1:
+                            self.print_expression(self.nodes[i].body[j], attachment, True)
+                        else:
+                            self.print_expression(self.nodes[i].body[j], attachment, False)
+
                     
 class Block:
     def __init__(self, body):
