@@ -3,7 +3,16 @@ class Tree:
         self.nodes = []
         self.idents = []
         self.begin_index = 0
-        self.expr_list = []
+        self.expr_list = {}
+
+    def add_block(self, indexes_string):
+        arr_indexes = indexes_string.split(' ')
+        body = []
+        for i in range(len(arr_indexes)):
+            if arr_indexes[i] in self.expr_list:
+                body.append(self.expr_list[arr_indexes[i]])
+        
+        self.nodes.append(Block(body))
 
     def print_expression(self, node, attachment, last):
         if attachment > 0:
@@ -68,7 +77,7 @@ class Tree:
 
     def print_tree(self):
         print("...")
-        attachment = 1
+        attachment = 0
         for i in range(len(self.nodes)):
             if self.nodes[i].classtype == "ident":
                 if i == len(self.nodes) - 1:
@@ -78,11 +87,18 @@ class Tree:
             
             if self.nodes[i].classtype == "block":
                 for j in range(len(self.nodes[i].body)):
+
+                    if self.nodes[i].body[j].classtype == "ident":
+                        if j == len(self.nodes[i].body) - 1:
+                            self.print_identification(self.nodes[i].body[j], attachment + 1, True)
+                        else:
+                            self.print_identification(self.nodes[i].body[j], attachment + 1, False)
+
                     if self.nodes[i].body[j].classtype == "expr":
                         if j == len(self.nodes[i].body) - 1:
-                            self.print_expression(self.nodes[i].body[j], attachment, True)
+                            self.print_expression(self.nodes[i].body[j], attachment + 1, True)
                         else:
-                            self.print_expression(self.nodes[i].body[j], attachment, False)
+                            self.print_expression(self.nodes[i].body[j], attachment + 1, False)
 
                     
 class Block:
@@ -102,10 +118,6 @@ class ExpressionNode:
         self.value1 = value1
         self.value2 = value2
         self.operator = op
-
-class ExpressionNodeList:
-    def __init__(self):
-        self.expr_list = []
 
 class Unary:
     @staticmethod

@@ -3,31 +3,8 @@ import my_ast_nodes
 import ply.yacc as yacc
 
 tokens = [
-    'NUMBER', 
-    'IDENT',
-    'PLUS', 
-    'ASSIGN',
-    'LPAREN', 
-    'RPAREN',
-    'MUL',
-    'LBRACE', 
-    'RBRACE',
-    'SEMICOLON',
-    'GT', 
-    'LT', 
-    'GE', 
-    'LE',
-    'EQUALS',
-    'MINUS',
-    'FSLASH',
-    'COLON',
-    'SQUOTE',
-    'QUOTE',
-    'COMMA',
-    'OR', 
-    'AND',
-    'DOTDOT',
-    'DOT'
+    'NUMBER', 'IDENT','PLUS', 'ASSIGN','LPAREN', 'RPAREN','MUL','LBRACE', 'RBRACE','SEMICOLON',
+    'GT', 'LT', 'GE', 'LE','EQUALS','MINUS','FSLASH','COLON','SQUOTE','QUOTE','COMMA','OR', 'AND','DOTDOT','DOT'
 ]
 
 reserved = {
@@ -91,7 +68,6 @@ t_AND = r'&'
 t_ignore = ' \r\t'
 
 mytree = my_ast_nodes.Tree()
-blocks = []
 
 def t_IDENT(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -126,7 +102,7 @@ def t_error(t):
 
 
 lexer = lex.lex()
-
+#-------------------------------------------------------------------------------------------------
 def p_blocks_list(t):
     '''blocks_list : 
                    | blocks_list block_dot
@@ -134,18 +110,16 @@ def p_blocks_list(t):
     '''
 
 def p_block_dot(t):
-    '''block_dot : begin expression_list END DOT'''
-    mytree.nodes.append(my_ast_nodes.Block(mytree.expr_list.pop().expr_list))
-    mytree.begin_index -= 1
+    '''block_dot : BEGIN expression_list END DOT'''
+    mytree.add_block(t[2])
 
 def p_expression_list(t):
     '''expression_list : 
                        | expression_list multiplicative_expression SEMICOLON'''
-    # if len(t) > 2:
-    #     t[0] = str(t[0]) + str(t[2])
-        # .expr_list.append(t[2])
-    # else: 
-    #     t[0] = my_ast_nodes.ExpressionNodeList()
+    if len(t) > 2:
+        print("")
+        t[0] = str(str(t[1]) + ' ' + str(t[2]))
+        print("")
 
 def p_multiplicative_expression(t):
     '''multiplicative_expression : unary_expression
@@ -154,7 +128,9 @@ def p_multiplicative_expression(t):
                                  | multiplicative_expression MOD unary_expression
                                  | multiplicative_expression DIV unary_expression'''
     if len(t) > 2:
-         mytree.expr_list[-1].expr_list.append(my_ast_nodes.ExpressionNode(t[1], t[2], t[3]))
+        expr_index =  str(len(mytree.expr_list))
+        mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], t[2], t[3])
+        t[0] = expr_index
     else:
         t[0] = t[1]
 
@@ -174,11 +150,6 @@ def p_group(t):
              | BOOL'''
     t[0] = t[1]
 
-def p_begin(t):
-    ''' begin : BEGIN'''
-    mytree.begin_index += 1
-    mytree.expr_list.append(my_ast_nodes.ExpressionNodeList())
-
 # -------------------------------------------------------------------------------------------
 
 def p_identification_block(t):
@@ -191,8 +162,12 @@ def p_identification_list(t):
 def p_identification(t):
     '''identification : ident_list COLON type SEMICOLON
                       | ident_list COLON type_arr SEMICOLON'''
-    mytree.nodes.append(my_ast_nodes.IdentificationNode(mytree.idents,t[3]))
-    mytree.idents = []
+    if mytree.begin_index > 0:
+        mytree.expr_list[-1].expr_list.append(my_ast_nodes.IdentificationNode(mytree.idents,t[3]))
+        mytree.idents = []
+    else:
+        mytree.nodes.append(my_ast_nodes.IdentificationNode(mytree.idents,t[3]))
+        mytree.idents = []
 
 def p_ident_list(t):
     '''ident_list : ident_list COMMA ident
@@ -229,14 +204,12 @@ def p_error(t):
     global prog
     prog = None
 
-
+    #   var
+    #   a, asap : integer;  
+    #   b, asasas, asdafsf : char;
+    #   c, d : array [1 .. 3] of integer;
 
 data = '''
-      var
-      a, asap : integer;  
-      b, asasas, asdafsf : char;
-      c, d : array [1 .. 3] of integer;
-
       begin
       a * b;
       c / d;
@@ -245,7 +218,7 @@ data = '''
     '''
 
 parser = yacc.yacc()
-# parser.parse(data, debug=True)
-parser.parse(data)
+parser.parse(data, debug=True)
+# parser.parse(data)
 
 mytree.print_tree()
