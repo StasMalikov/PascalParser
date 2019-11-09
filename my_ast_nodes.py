@@ -6,13 +6,14 @@ class Tree:
         self.expr_list = {}
 
     def add_block(self, indexes_string):
-        arr_indexes = indexes_string.split(' ')
-        body = []
-        for i in range(len(arr_indexes)):
-            if arr_indexes[i] in self.expr_list:
-                body.append(self.expr_list[arr_indexes[i]])
+        if indexes_string is not None:
+            arr_indexes = indexes_string.split(' ')
+            body = []
+            for i in range(len(arr_indexes)):
+                if arr_indexes[i] in self.expr_list:
+                    body.append(self.expr_list[arr_indexes[i]])
         
-        self.nodes.append(Block(body))
+            self.nodes.append(Block(body))
 
     def print_expression(self, node, attachment, last):
         if attachment > 0:
@@ -81,18 +82,18 @@ class Tree:
         for i in range(len(self.nodes)):
             if self.nodes[i].classtype == "ident":
                 if i == len(self.nodes) - 1:
-                    self.print_identification(self.nodes[i], attachment, True)
+                    self.print_identification(self.nodes[i], self.nodes[i].attachment, True)
                 else:
-                    self.print_identification(self.nodes[i], attachment, False)
+                    self.print_identification(self.nodes[i], self.nodes[i].attachment, False)
             
             if self.nodes[i].classtype == "block":
                 for j in range(len(self.nodes[i].body)):
 
                     if self.nodes[i].body[j].classtype == "ident":
                         if j == len(self.nodes[i].body) - 1:
-                            self.print_identification(self.nodes[i].body[j], attachment + 1, True)
+                            self.print_identification(self.nodes[i].body[j], self.nodes[i].attachment, True)
                         else:
-                            self.print_identification(self.nodes[i].body[j], attachment + 1, False)
+                            self.print_identification(self.nodes[i].body[j], self.nodes[i].attachment, False)
 
                     if self.nodes[i].body[j].classtype == "expr":
                         if j == len(self.nodes[i].body) - 1:
@@ -107,10 +108,11 @@ class Block:
         self.classtype = "block"
 
 class IdentificationNode:
-    def __init__(self, values, _type):
+    def __init__(self, values, _type, begin_index):
         self.classtype = "ident"
         self._type = _type
         self.values = values
+        self.attachment = begin_index
 
 class ExpressionNode:
     def __init__(self, value1, op, value2):

@@ -110,8 +110,9 @@ def p_blocks_list(t):
     '''
 
 def p_block_dot(t):
-    '''block_dot : BEGIN expression_list END DOT'''
+    '''block_dot : begin identification_block expression_list END DOT'''
     mytree.add_block(t[2])
+    mytree.begin_index -= 1
 
 def p_expression_list(t):
     '''expression_list : 
@@ -162,12 +163,8 @@ def p_identification_list(t):
 def p_identification(t):
     '''identification : ident_list COLON type SEMICOLON
                       | ident_list COLON type_arr SEMICOLON'''
-    if mytree.begin_index > 0:
-        mytree.expr_list[-1].expr_list.append(my_ast_nodes.IdentificationNode(mytree.idents,t[3]))
-        mytree.idents = []
-    else:
-        mytree.nodes.append(my_ast_nodes.IdentificationNode(mytree.idents,t[3]))
-        mytree.idents = []
+    mytree.nodes.append(my_ast_nodes.IdentificationNode(mytree.idents, t[3], mytree.begin_index))
+    mytree.idents = []
 
 def p_ident_list(t):
     '''ident_list : ident_list COMMA ident
@@ -179,10 +176,12 @@ def p_ident_list(t):
         else:
             mytree.idents.append(t[1])
             mytree.idents.append(t[3])
-
     else:
         mytree.idents.append(t[1])
 
+def p_begin(t):
+    ''' begin : BEGIN'''
+    mytree.begin_index += 1 
 
 def p_ident(t):
     '''ident : IDENT'''
@@ -208,11 +207,25 @@ def p_error(t):
     #   a, asap : integer;  
     #   b, asasas, asdafsf : char;
     #   c, d : array [1 .. 3] of integer;
+    
+    #   a * b;
+    #   c / d;
 
 data = '''
+      var
+
+      a, asap : integer;  
+      b, asasas, asdafsf : char;
+
       begin
+
+      var
+      test0, test1 : integer;  
+      test2, test3 : char;
+
       a * b;
       c / d;
+
       end.
 
     '''
