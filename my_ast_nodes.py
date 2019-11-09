@@ -15,6 +15,22 @@ class Tree:
         
             self.nodes.append(Block(body))
 
+    def print_assign(self, node, attachment, last):
+        if attachment > 0:
+            if last:
+                print("│" + " "*attachment + "└ " + ":=")
+                print("│" + " "*attachment + "  ├ " + node.ident)
+                self.print_expression(self.expr_list[node.body_index], attachment + 2, last)
+            else:
+                print("│" + " "*attachment + "├ " + ":=")
+                print("│" + " "*attachment + "│ ├ " + node.ident)
+                self.print_expression(self.expr_list[node.body_index], attachment + 2, last)
+        else:
+            print("├ " + ":=")
+            print("│ ├ " + node.ident)
+            self.print_expression(self.expr_list[node.body_index], 2, last)
+
+
     def print_expression(self, node, attachment, last):
         if attachment > 0:
             if last:
@@ -101,6 +117,14 @@ class Tree:
                         else:
                             self.print_expression(self.nodes[i].body[j], attachment + 1, False)
 
+                    if self.nodes[i].body[j].classtype == "assign":
+                        if j == len(self.nodes[i].body) - 1:
+                            self.print_assign(self.nodes[i].body[j], attachment + 1, True)
+                        else:
+                            self.print_assign(self.nodes[i].body[j], attachment + 1, False)
+
+                    
+
                     
 class Block:
     def __init__(self, body):
@@ -113,6 +137,12 @@ class IdentificationNode:
         self._type = _type
         self.values = values
         self.attachment = begin_index
+
+class AssignNode:
+    def __init__(self, ident, body_index):
+        self.classtype = "assign"
+        self.ident = ident
+        self.body_index = body_index
 
 class ExpressionNode:
     def __init__(self, value1, op, value2):

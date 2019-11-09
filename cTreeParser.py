@@ -44,13 +44,12 @@ tokens += reserved.values()
 t_DOT = r'\.'
 t_DOTDOT = r'\.\.'
 t_PLUS = r'\+'
-t_ASSIGN = r'\:='
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_MUL = r'\*'
 t_LBRACE = r'\['
 t_RBRACE = r'\]'
-t_SEMICOLON = r';'
+t_SEMICOLON = r'\;'
 t_GT = r'>'
 t_LT = r'<'
 t_GE = r'>='
@@ -110,17 +109,27 @@ def p_blocks_list(t):
     '''
 
 def p_block_dot(t):
-    '''block_dot : begin identification_block expression_list END DOT'''
-    mytree.add_block(t[2])
-    mytree.begin_index -= 1
+    '''block_dot : begin identification_block expression_list END DOT
+                 | begin expression_list END DOT'''
+    if len(t) == 6:
+        mytree.add_block(t[3])
+        mytree.begin_index -= 1
+    else:
+        mytree.add_block(t[2])
+        mytree.begin_index -= 1
 
 def p_expression_list(t):
     '''expression_list : 
-                       | expression_list multiplicative_expression SEMICOLON'''
+                       | expression_list multiplicative_expression SEMICOLON
+                       | expression_list  assign SEMICOLON'''
     if len(t) > 2:
-        print("")
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
-        print("")
+
+def p_assign(t):
+    '''assign : ident COLON EQUALS multiplicative_expression'''
+    expr_index =  str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
+    t[0] = expr_index
 
 def p_multiplicative_expression(t):
     '''multiplicative_expression : unary_expression
@@ -167,8 +176,8 @@ def p_identification(t):
     mytree.idents = []
 
 def p_ident_list(t):
-    '''ident_list : ident_list COMMA ident
-                  | ident COMMA ident
+    '''ident_list : 
+                  | ident_list COMMA ident
                   | ident'''
     if len(t) > 2:
         if len(mytree.idents)> 0:
@@ -176,7 +185,7 @@ def p_ident_list(t):
         else:
             mytree.idents.append(t[1])
             mytree.idents.append(t[3])
-    else:
+    elif len(t) > 1:
         mytree.idents.append(t[1])
 
 def p_begin(t):
@@ -212,21 +221,12 @@ def p_error(t):
     #   c / d;
 
 data = '''
-      var
 
-      a, asap : integer;  
-      b, asasas, asdafsf : char;
+begin
 
-      begin
+mytest :=  a * b;
 
-      var
-      test0, test1 : integer;  
-      test2, test3 : char;
-
-      a * b;
-      c / d;
-
-      end.
+end.
 
     '''
 
