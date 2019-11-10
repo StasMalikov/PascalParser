@@ -15,37 +15,78 @@ class Tree:
         
             self.nodes.append(Block(body))
 
+    """Выбирает метод для отрисовки элементов AST дерева """
+    def fork(self, node, attachment, last):
+        if node.classtype == "additive":
+            self.print_additive(node, attachment, last)
+
+        elif node.classtype == "expr":
+            self.print_expression(node, attachment, last)
+
+        elif node.classtype == "assign":
+            self.print_assign(node, attachment, last)
+
+    def print_additive(self, node, attachment, last):
+        if node.op is not None:
+            if attachment > 0:
+                if last:
+                    print("│" + " "*attachment + "└ " + node.op)
+                    self.fork(self.expr_list[node.left_index], attachment + 2, last)
+                    self.fork(self.expr_list[node.right_index], attachment + 2, last)
+                else:
+                    print("│" + " "*attachment + "├ " + node.op)
+                    self.fork(self.expr_list[node.left_index], attachment + 2, last)
+                    self.fork(self.expr_list[node.right_index], attachment + 2, last)
+            else:
+                print("├ " + node.op)
+                self.fork(self.expr_list[node.left_index],  2, last)
+                self.fork(self.expr_list[node.right_index], 2, last)
+        else:
+            if attachment > 0:
+                if last:
+                    self.fork(self.expr_list[node.left_index], attachment, last)
+            else:
+                self.fork(self.expr_list[node.left_index],  0, last)
+
+
     def print_assign(self, node, attachment, last):
         if attachment > 0:
             if last:
                 print("│" + " "*attachment + "└ " + ":=")
                 print("│" + " "*attachment + "  ├ " + node.ident)
-                self.print_expression(self.expr_list[node.body_index], attachment + 2, last)
+                self.fork(self.expr_list[node.body_index], attachment + 2, last)
             else:
                 print("│" + " "*attachment + "├ " + ":=")
                 print("│" + " "*attachment + "│ ├ " + node.ident)
-                self.print_expression(self.expr_list[node.body_index], attachment + 2, last)
+                self.fork(self.expr_list[node.body_index], attachment + 2, last)
         else:
             print("├ " + ":=")
             print("│ ├ " + node.ident)
-            self.print_expression(self.expr_list[node.body_index], 2, last)
+            self.fork(self.expr_list[node.body_index], 0, last)
 
 
     def print_expression(self, node, attachment, last):
-        if attachment > 0:
-            if last:
-                print("│" + " "*attachment + "└ " + node.operator)
-                print("│" + " "*attachment + "  ├ " + node.value1)
-                print("│" + " "*attachment + "  └ " + node.value2)
+        if node.operator is not None:
+            if attachment > 0:
+                if last:
+                    print("│ "*attachment + "└ " + node.operator)
+                    print("│ "*attachment  + "  ├ " + node.value1)
+                    print("│ "*attachment  + "  └ " + node.value2)
+                else:
+                    print("│ "*attachment + "├ " + node.operator)
+                    print("│ "*attachment + "│ ├ " + node.value1)
+                    print("│ "*attachment + "│ └ " + node.value2)
+                    
             else:
-                print("│" + " "*attachment + "├ " + node.operator)
-                print("│" + " "*attachment + "│ ├ " + node.value1)
-                print("│" + " "*attachment + "│ └ " + node.value2)
-                
+                print("├ " + node.operator)
+                print("│ ├ " + node.value1)
+                print("│ └ " + node.value2)
         else:
-            print("├ " + node.operator)
-            print("│ ├ " + node.value1)
-            print("│ └ " + node.value2)
+            if attachment > 0:
+                print("│ "*attachment  + "  └ " + node.value1)
+            else:
+                print("│ └ " + node.value1)
+
     
     def print_identification(self, node, attachment, last):
         if attachment > 0:
@@ -111,17 +152,11 @@ class Tree:
                         else:
                             self.print_identification(self.nodes[i].body[j], self.nodes[i].attachment, False)
 
-                    if self.nodes[i].body[j].classtype == "expr":
+                    else:
                         if j == len(self.nodes[i].body) - 1:
-                            self.print_expression(self.nodes[i].body[j], attachment + 1, True)
+                            self.fork(self.nodes[i].body[j], attachment + 1, True)
                         else:
-                            self.print_expression(self.nodes[i].body[j], attachment + 1, False)
-
-                    if self.nodes[i].body[j].classtype == "assign":
-                        if j == len(self.nodes[i].body) - 1:
-                            self.print_assign(self.nodes[i].body[j], attachment + 1, True)
-                        else:
-                            self.print_assign(self.nodes[i].body[j], attachment + 1, False)
+                            self.fork(self.nodes[i].body[j], attachment + 1, False)
 
                     
 
@@ -137,6 +172,13 @@ class IdentificationNode:
         self._type = _type
         self.values = values
         self.attachment = begin_index
+
+class AdditiveNode:
+    def __init__(self,left_index, op, right_index):
+        self.classtype = "additive"
+        self.left_index = left_index
+        self.op = op
+        self.right_index = right_index
 
 class AssignNode:
     def __init__(self, ident, body_index):

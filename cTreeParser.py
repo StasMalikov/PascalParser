@@ -3,7 +3,7 @@ import my_ast_nodes
 import ply.yacc as yacc
 
 tokens = [
-    'NUMBER', 'IDENT','PLUS', 'ASSIGN','LPAREN', 'RPAREN','MUL','LBRACE', 'RBRACE','SEMICOLON',
+    'NUMBER', 'IDENT','PLUS','LPAREN', 'RPAREN','MUL','LBRACE', 'RBRACE','SEMICOLON',
     'GT', 'LT', 'GE', 'LE','EQUALS','MINUS','FSLASH','COLON','SQUOTE','QUOTE','COMMA','OR', 'AND','DOTDOT','DOT'
 ]
 
@@ -105,8 +105,7 @@ lexer = lex.lex()
 def p_blocks_list(t):
     '''blocks_list : 
                    | blocks_list block_dot
-                   | blocks_list identification_block
-    '''
+                   | blocks_list identification_block'''
 
 def p_block_dot(t):
     '''block_dot : begin identification_block expression_list END DOT
@@ -120,16 +119,31 @@ def p_block_dot(t):
 
 def p_expression_list(t):
     '''expression_list : 
-                       | expression_list multiplicative_expression SEMICOLON
+                       | expression_list additive_expression SEMICOLON
                        | expression_list  assign SEMICOLON'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
 def p_assign(t):
-    '''assign : ident COLON EQUALS multiplicative_expression'''
+    '''assign : ident COLON EQUALS additive_expression'''
     expr_index =  str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
     t[0] = expr_index
+
+
+def p_additive_expression(t):
+    '''additive_expression : multiplicative_expression
+                           | additive_expression PLUS multiplicative_expression
+                           | additive_expression MINUS multiplicative_expression'''
+    if len(t) > 2:
+        add_index = str(len(mytree.expr_list))
+        mytree.expr_list[add_index] = my_ast_nodes.AdditiveNode(t[1], t[2], t[3])
+        t[0] = add_index
+    else:
+        expr_index =  str(len(mytree.expr_list))
+        mytree.expr_list[expr_index] = my_ast_nodes.AdditiveNode(t[1], None, None)
+        t[0] = expr_index
+
 
 def p_multiplicative_expression(t):
     '''multiplicative_expression : unary_expression
@@ -142,7 +156,9 @@ def p_multiplicative_expression(t):
         mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], t[2], t[3])
         t[0] = expr_index
     else:
-        t[0] = t[1]
+        expr_index =  str(len(mytree.expr_list))
+        mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], None, None)
+        t[0] = expr_index
 
 
 def p_unary_expression(t):
@@ -225,10 +241,10 @@ data = '''
 begin
 
 mytest :=  a * b;
+test2 := a + b;
 
 end.
-
-    '''
+'''
 
 parser = yacc.yacc()
 parser.parse(data, debug=True)
