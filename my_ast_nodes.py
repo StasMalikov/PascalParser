@@ -70,24 +70,27 @@ class Tree:
     def print_expression(self, node, attachment, last):
             if attachment > 0:
                 if last:
-                    print("│ "*attachment + "└ " + node.operator)
-                    if type(node.value1) is ExpressionNode:
-                        self.print_expression(node.value1, attachment, last)  
-                    else:
+                    if node.operator is not None:
+                        print("│ "*attachment + "└ " + node.operator)
+                    if node.value1 is not None:
                         print("│ "*attachment  + "  ├ " + node.value1)
-                    print("│ "*attachment  + "  └ " + node.value2)
+                    if node.value2 is not None:
+                        print("│ "*attachment  + "  └ " + node.value2)
                 else:
-                    if type(node.value1) is ExpressionNode:
-                        self.print_expression(node.value1, attachment, last)
-                    else:
+                    if node.operator is not None:
                         print("│ "*attachment + "├ " + node.operator)
-                    print("│ "*attachment + "│ ├ " + node.value1)
-                    print("│ "*attachment + "│ └ " + node.value2)
+                    if node.value1 is not None:
+                        print("│ "*attachment + "│ ├ " + node.value1)
+                    if node.value2 is not None:
+                        print("│ "*attachment + "│ └ " + node.value2)
                     
             else:
-                print("├ " + node.operator)
-                print("│ ├ " + node.value1)
-                print("│ └ " + node.value2)
+                if node.operator is not None:
+                    print("├ " + node.operator)
+                if node.value1 is not None:
+                    print("│ ├ " + node.value1)
+                if node.value2 is not None:
+                    print("│ └ " + node.value2)
 
     
     def print_identification(self, node, attachment, last):

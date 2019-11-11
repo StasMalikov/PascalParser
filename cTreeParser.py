@@ -239,9 +239,15 @@ def p_error(t):
 
 data = '''
 
+a, b : integer;  
+c, d, e : char;
+k, l : array [1 .. 3] of integer;
+
 begin
 
 mytest :=  a * b;
+
+mytest2 := c + d;
 
 end.
 '''
