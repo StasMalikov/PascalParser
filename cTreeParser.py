@@ -153,7 +153,8 @@ def p_multiplicative_expression(t):
                                  | multiplicative_expression DIV unary_expression'''
     if len(t) > 2:
         expr_index =  str(len(mytree.expr_list))
-        mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], t[2], t[3])
+        value_t1 = mytree.expr_list[str(t[1])].value1
+        mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(value_t1 , t[2], t[3])
         t[0] = expr_index
     else:
         expr_index =  str(len(mytree.expr_list))

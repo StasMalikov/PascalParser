@@ -70,10 +70,16 @@ class Tree:
             if attachment > 0:
                 if last:
                     print("│ "*attachment + "└ " + node.operator)
-                    print("│ "*attachment  + "  ├ " + node.value1)
+                    if type(node.value1) is ExpressionNode:
+                        self.print_expression(node.value1, attachment, last)  
+                    else:
+                        print("│ "*attachment  + "  ├ " + node.value1)
                     print("│ "*attachment  + "  └ " + node.value2)
                 else:
-                    print("│ "*attachment + "├ " + node.operator)
+                    if type(node.value1) is ExpressionNode:
+                        self.print_expression(node.value1, attachment, last)
+                    else:
+                        print("│ "*attachment + "├ " + node.operator)
                     print("│ "*attachment + "│ ├ " + node.value1)
                     print("│ "*attachment + "│ └ " + node.value2)
                     
