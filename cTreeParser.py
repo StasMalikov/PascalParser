@@ -242,7 +242,6 @@ data = '''
 begin
 
 mytest :=  a * b;
-test2 := a + b;
 
 end.
 '''
