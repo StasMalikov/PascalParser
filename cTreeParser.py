@@ -104,12 +104,11 @@ lexer = lex.lex()
 #-------------------------------------------------------------------------------------------------
 def p_blocks_list(t):
     '''blocks_list : 
-                   | blocks_list block_dot
+                    | blocks_list block_dot
                    | blocks_list identification_block'''
 
 def p_block_dot(t):
-    '''block_dot : begin identification_block expression_list END DOT
-                 | begin expression_list END DOT'''
+    '''block_dot : begin expression_list END DOT'''
     if len(t) == 6:
         mytree.add_block(t[3])
         mytree.begin_index -= 1
@@ -193,7 +192,7 @@ def p_identification(t):
     mytree.idents = []
 
 def p_ident_list(t):
-    '''ident_list : 
+    '''ident_list :
                   | ident_list COMMA ident
                   | ident'''
     if len(t) > 2:
@@ -238,18 +237,13 @@ def p_error(t):
     #   c / d;
 
 data = '''
-
+begin
+var
 a, b : integer;  
 c, d, e : char;
 k, l : array [1 .. 3] of integer;
-
-begin
-
-mytest :=  a * b;
-
-mytest2 := c + d;
-
 end.
+
 '''
 
 parser = yacc.yacc()
