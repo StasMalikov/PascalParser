@@ -109,12 +109,8 @@ def p_blocks_list(t):
 
 def p_block_dot(t):
     '''block_dot : begin expression_list END DOT'''
-    if len(t) == 6:
-        mytree.add_block(t[3])
-        mytree.begin_index -= 1
-    else:
-        mytree.add_block(t[2])
-        mytree.begin_index -= 1
+    mytree.add_block(t[2])
+    mytree.begin_index -= 1
 
 def p_expression_list(t):
     '''expression_list : 
@@ -128,7 +124,6 @@ def p_assign(t):
     expr_index =  str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
     t[0] = expr_index
-
 
 def p_additive_expression(t):
     '''additive_expression : multiplicative_expression
@@ -192,16 +187,11 @@ def p_identification(t):
     mytree.idents = []
 
 def p_ident_list(t):
-    '''ident_list :
-                  | ident_list COMMA ident
-                  | ident'''
+    '''ident_list : ident
+                  | ident_list COMMA ident '''
     if len(t) > 2:
-        if len(mytree.idents)> 0:
-            mytree.idents.append(t[3])
-        else:
-            mytree.idents.append(t[1])
-            mytree.idents.append(t[3])
-    elif len(t) > 1:
+        mytree.idents.append(t[3])
+    else:
         mytree.idents.append(t[1])
 
 def p_begin(t):
@@ -233,17 +223,14 @@ def p_error(t):
     #   b, asasas, asdafsf : char;
     #   c, d : array [1 .. 3] of integer;
     
-    #   a * b;
-    #   c / d;
+# mytest :=  a * b;
+# test2 := a + b;
 
 data = '''
 begin
-var
-a, b : integer;  
-c, d, e : char;
-k, l : array [1 .. 3] of integer;
+mytest :=  a * b;
+test2 := a + b; 
 end.
-
 '''
 
 parser = yacc.yacc()

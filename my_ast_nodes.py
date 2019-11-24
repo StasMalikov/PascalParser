@@ -4,6 +4,8 @@ class Tree:
         self.idents = []
         self.begin_index = 0
         self.expr_list = {}
+        self.var_global = False
+        self.var_block = False
 
     def add_block(self, indexes_string):
         if indexes_string is not None:
