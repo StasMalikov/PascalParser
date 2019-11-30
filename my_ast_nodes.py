@@ -29,7 +29,11 @@ class Tree:
             self.print_assign(node, attachment, last)
 
         elif node.classtype == "if_block":
-             self.print_if_block(node, attachment, last)
+            self.print_if_block(node, attachment, last)
+             
+        elif node.classtype == "for_block":
+            self.print_for_block(node, attachment, last)
+
 
     def print_if_block(self, node, attachment, last):
         print("│" + " "*attachment + "├ if")
@@ -43,6 +47,15 @@ class Tree:
             for i in range(len(node.else_block)):
                 if node.else_block[i] in self.expr_list:
                     self.fork(self.expr_list[node.else_block[i]], attachment, False)
+    
+    def print_for_block(self, node, attachment, last):
+        print("│" + " "*attachment + "├ for")
+        self.fork(self.expr_list[node.start_condition_index], attachment, False)
+        print("│" + " "*attachment + "├ to " + str(node.end_number))
+        for i in range(len(node.body)):
+            if node.body[i] in self.expr_list:
+                self.fork(self.expr_list[node.body[i]], attachment, False)
+
 
     def print_additive(self, node, attachment, last):
             if attachment > 0:
@@ -207,6 +220,14 @@ class ExpressionNode:
         self.value1 = value1
         self.value2 = value2
         self.operator = op
+
+class ForNode:
+    def __init__(self, start_condition_index, end_number, body):
+        self.classtype = "for_block"
+        self.start_condition_index = start_condition_index
+        self.end_number = end_number
+        if body is not None:
+            self.body = body.split(' ')
 
 class IfBlock:
     def __init__(self, condition, then_block, else_block):

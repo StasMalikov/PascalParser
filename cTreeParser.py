@@ -115,6 +115,13 @@ def p_block_dot(t):
     t[0] = t[2]
     mytree.begin_index -= 1
 
+def p_for_block(t):
+    '''for_block : FOR assign TO NUMBER DO begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.ForNode(t[2], t[4], t[7])
+    t[0] = expr_index
+
+
 def p_if_then_else(t):
     '''if_then_else : IF equality_expression THEN begin expression_list END ELSE begin expression_list END SEMICOLON'''
     expr_index = str(len(mytree.expr_list))
@@ -133,7 +140,8 @@ def p_expression_list(t):
                        | expression_list  assign SEMICOLON
                        | expression_list identification_block
                        | expression_list if_then
-                       | expression_list if_then_else'''
+                       | expression_list if_then_else
+                       | expression_list for_block'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
@@ -284,24 +292,31 @@ def p_error(t):
 # test2 := a + b;
 
 data = '''
-      var
-      a, asap : integer;  
-      rav
-    begin 
-      var
-      a, asap : integer;  
-      b, asasas, asdafsf : char;
-      rav
-    c := f - 40;
-    if 20 = 20 then 
-    begin
-    a := 20 + 30;
-    end
-    else
-    begin
-    c := rr / 34;
-    end;
-    end.
+    var
+    a, asap : integer;  
+    rav
+        begin 
+            var
+            a, asap : integer;  
+            b, asasas, asdafsf : char;
+            rav
+
+            c := f - 40;
+
+            if 20 = 20 then 
+                begin
+                a := 20 + 30;
+                end
+            else
+                begin
+                c := rr / 34;
+                end;
+
+            for i := 0 to 10 do 
+                begin
+                ttt := 55 * 100;
+                end;
+        end.
 '''
 
 parser = yacc.yacc()
