@@ -78,6 +78,20 @@ class Tree:
             if node.body[i] in self.expr_list:
                 self.fork(self.expr_list[node.body[i]], attachment, False)
 
+    def print_procedure(self ,node, attachment, last):
+        print("│" + " "*attachment + "├ procedure " + node.name)
+        print("│" + " "*attachment + "├ params:")
+        for i in range(len(node.param_list_index)):
+            if node.param_list_index[i] in self.expr_list:
+                self.print_identification(self.expr_list[node.param_list_index[i]], attachment, False)
+        print("│" + " "*attachment + "├ body:")
+        for i in range(len(node.body)):
+            if node.body[i] in self.expr_list:
+                self.fork(self.expr_list[node.body[i]], attachment, False)
+    
+        
+
+
 
     def print_additive(self, node, attachment, last):
             if attachment > 0:
@@ -204,6 +218,9 @@ class Tree:
                         else:
                             self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, False)
 
+                    elif self.nodes[i].body[j].classtype == "procedure":
+                        self.print_procedure(self.nodes[i].body[j], attachment + 1, False)
+
                     else:
                         if j == len(self.nodes[i].body) - 1:
                             self.fork(self.nodes[i].body[j], attachment + 1, True)
@@ -250,6 +267,16 @@ class ForNode:
         self.end_number = end_number
         if body is not None:
             self.body = body.split(' ')
+
+class Procedure:
+    def __init__(self, name, param_list_index, body):
+        self.classtype = "procedure"
+        self.name = name
+        if body is not None:
+            self.body = body.split(' ')
+
+        if param_list_index is not None:
+            self.param_list_index = param_list_index.split(' ')
 
 class WhileNode:
     def __init__(self, condition_index, body):

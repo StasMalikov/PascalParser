@@ -37,7 +37,8 @@ reserved = {
     'false': 'FALSE',
     'for': 'FOR',
     'function': 'FUNCTION',
-    'to': 'TO'
+    'to': 'TO',
+    'procedure': 'PROCEDURE'
 }
 
 tokens += reserved.values()
@@ -106,7 +107,8 @@ lexer = lex.lex()
 def p_blocks_list(t):
     '''blocks_list : 
                     | blocks_list block_dot
-                   | blocks_list identification_block'''
+                    | blocks_list identification_block
+                    | blocks_list procedure_block'''
     if len(t) > 2:
         mytree.add_block(t[2])
 
@@ -114,6 +116,12 @@ def p_block_dot(t):
     '''block_dot : begin expression_list END DOT'''
     t[0] = t[2]
     mytree.begin_index -= 1
+
+def p_procedure_block(t):
+    '''procedure_block : PROCEDURE ident LPAREN identification_list RPAREN SEMICOLON begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.Procedure(t[2], t[4], t[8])
+    t[0] = expr_index
 
 def p_while_block(t):
     '''while_block : WHILE equality_expression DO begin expression_list END SEMICOLON'''
@@ -296,51 +304,64 @@ def p_error(t):
     global prog
     prog = None
 
-    #   var
-    #   a, asap : integer;  
-    #   b, asasas, asdafsf : char;
-    #   c, d : array [1 .. 3] of integer;
-    #   rav
-    
-# mytest :=  a * b;
-# test2 := a + b;
-
 data = '''
-    var
-    a, asap : integer;  
-    rav
-        begin 
-            var
-            a, asap : integer;  
-            b, asasas, asdafsf : char;
-            rav
-
-            c := f - 40;
-
-            if 20 = 20 then 
-                begin
-                a := 20 + 30;
-                end
-            else
-                begin
-                c := rr / 34;
-                end;
-
-            for i := 0 to 10 do 
-                begin
-                ttt := 55 * 100;
-                end;
-
-            while r > u do
-                begin
-                i := 60/6;
-                end;
-
-            do 
-            t := 50;
-            while i < 10 ;
-        end.
+    procedure MaxNumber(a,b: integer;);
+        begin
+        if a>b then
+            begin
+            max:=a; 
+            end
+        else
+            begin
+            max:=b;
+            end;
+        end;
 '''
+
+# data = '''
+#     var
+#     a, asap : integer;  
+#     rav
+
+#     procedure MaxNumber(a,b: integer;);
+#         begin
+#         if a>b then
+#             begin
+#             max:=a 
+#             end;
+#         else
+#             begin
+#             max:=b;
+#             end;
+#         end;
+
+#         begin 
+#             var
+#             a, asap : integer;  
+#             b, asasas, asdafsf : char;
+#             rav
+#             c := f - 40;
+#             if 20 = 20 then 
+#                 begin
+#                 a := 20 + 30;
+#                 end
+#             else
+#                 begin
+#                 c := rr / 34;
+#                 end;
+#             for i := 0 to 10 do 
+#                 begin
+#                 ttt := 55 * 100;
+#                 end;
+#             while r > u do
+#                 begin
+#                 i := 60/6;
+#                 end;
+#             do 
+#             t := 50;
+#             while i < 10 ;
+#         end.
+# '''
 
 parser = yacc.yacc()
 parser.parse(data, debug=True)
