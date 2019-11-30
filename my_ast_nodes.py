@@ -33,6 +33,12 @@ class Tree:
              
         elif node.classtype == "for_block":
             self.print_for_block(node, attachment, last)
+        
+        elif node.classtype == "while_block":
+            self.print_while_block(node, attachment, last)
+
+        elif node.classtype == "do_while_block":
+            self.print_do_while_block(node, attachment, last)
 
 
     def print_if_block(self, node, attachment, last):
@@ -52,6 +58,22 @@ class Tree:
         print("│" + " "*attachment + "├ for")
         self.fork(self.expr_list[node.start_condition_index], attachment, False)
         print("│" + " "*attachment + "├ to " + str(node.end_number))
+        for i in range(len(node.body)):
+            if node.body[i] in self.expr_list:
+                self.fork(self.expr_list[node.body[i]], attachment, False)
+
+    def print_while_block(self, node, attachment, last):
+        print("│" + " "*attachment + "├ while")
+        self.fork(self.expr_list[node.condition_index], attachment, False)
+        print("│" + " "*attachment + "├ do")
+        for i in range(len(node.body)):
+            if node.body[i] in self.expr_list:
+                self.fork(self.expr_list[node.body[i]], attachment, False)
+
+    def print_do_while_block(self, node, attachment, last):
+        print("│" + " "*attachment + "├ dowhile")
+        self.fork(self.expr_list[node.condition_index], attachment, False)
+        print("│" + " "*attachment + "├ do")
         for i in range(len(node.body)):
             if node.body[i] in self.expr_list:
                 self.fork(self.expr_list[node.body[i]], attachment, False)
@@ -226,6 +248,20 @@ class ForNode:
         self.classtype = "for_block"
         self.start_condition_index = start_condition_index
         self.end_number = end_number
+        if body is not None:
+            self.body = body.split(' ')
+
+class WhileNode:
+    def __init__(self, condition_index, body):
+        self.classtype = "while_block"
+        self.condition_index = condition_index
+        if body is not None:
+            self.body = body.split(' ')
+
+class DoWhileNode:
+    def __init__(self, condition_index, body):
+        self.classtype = "do_while_block"
+        self.condition_index = condition_index
         if body is not None:
             self.body = body.split(' ')
 

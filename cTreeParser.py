@@ -115,6 +115,18 @@ def p_block_dot(t):
     t[0] = t[2]
     mytree.begin_index -= 1
 
+def p_while_block(t):
+    '''while_block : WHILE equality_expression DO begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.WhileNode(t[2], t[5])
+    t[0] = expr_index
+
+def p_dowhile_block(t):
+    '''dowhile_block : DO expression_list WHILE equality_expression SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.DoWhileNode(t[4], t[2])
+    t[0] = expr_index
+
 def p_for_block(t):
     '''for_block : FOR assign TO NUMBER DO begin expression_list END SEMICOLON'''
     expr_index = str(len(mytree.expr_list))
@@ -141,7 +153,9 @@ def p_expression_list(t):
                        | expression_list identification_block
                        | expression_list if_then
                        | expression_list if_then_else
-                       | expression_list for_block'''
+                       | expression_list for_block
+                       | expression_list dowhile_block
+                       | expression_list while_block'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
@@ -316,6 +330,15 @@ data = '''
                 begin
                 ttt := 55 * 100;
                 end;
+
+            while r > u do
+                begin
+                i := 60/6;
+                end;
+
+            do 
+            t := 50;
+            while i < 10 ;
         end.
 '''
 
