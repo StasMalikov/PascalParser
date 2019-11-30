@@ -23,6 +23,7 @@ reserved = {
     'end': 'END',
     'program': 'PROGRAM',
     'var': 'VAR',
+    'rav': 'RAV',
     'char': 'CHAR',
     'integer': 'INT',
     'Boolean': 'BOOL',
@@ -65,6 +66,11 @@ t_OR = r'\|'
 t_AND = r'&'
 
 t_ignore = ' \r\t'
+
+precedence = (
+     ('left', 'EQUALS'),
+     ('left', 'COLON'),
+ )
 
 mytree = my_ast_nodes.Tree()
 
@@ -131,9 +137,11 @@ def p_assign(t):
     mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
     t[0] = expr_index
 
-def p_ident(t):
-    '''ident : ident_list'''
-    t[0] = t[1]
+# def p_assign_start(t):
+#     '''assign_start : 
+#                     | ident_list COLON EQUALS'''
+#     t[0] = t[1]
+
 
 def p_additive_expression(t):
     '''additive_expression : multiplicative_expression
@@ -184,7 +192,7 @@ def p_group(t):
 # -------------------------------------------------------------------------------------------
 
 def p_identification_block(t):
-    '''identification_block : VAR identification_list'''
+    '''identification_block : VAR identification_list RAV'''
     t[0] = t[2]
 
 def p_identification_list(t):
@@ -228,6 +236,7 @@ def p_type(t):
             | CHAR'''
     t[0]=t[1]
 
+
 def p_error(t):
     print("Syntax error in input!")
     global prog
@@ -244,8 +253,12 @@ def p_error(t):
 data = '''
     var
     a, asap : integer;  
+    rav
 
     begin 
+    var
+    a, asap : integer; 
+    rav
 
     a := 20 + 30;
     end.
