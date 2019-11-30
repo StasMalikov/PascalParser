@@ -75,7 +75,7 @@ class Tree:
                     if node.operator is not None:
                         print("│ "*attachment + "└ " + node.operator)
                     if node.value1 is not None:
-                        print("│ "*attachment  + "  ├ " + node.value1)
+                        print("│ "*attachment  + "  ├ " + str(node.value1))
                     if node.value2 is not None:
                         print("│ "*attachment  + "  └ " + node.value2)
                 else:
@@ -144,20 +144,14 @@ class Tree:
         print("...")
         attachment = 0
         for i in range(len(self.nodes)):
-            if self.nodes[i].classtype == "ident":
-                if i == len(self.nodes) - 1:
-                    self.print_identification(self.nodes[i], self.nodes[i].attachment, True)
-                else:
-                    self.print_identification(self.nodes[i], self.nodes[i].attachment, False)
-            
             if self.nodes[i].classtype == "block":
                 for j in range(len(self.nodes[i].body)):
 
                     if self.nodes[i].body[j].classtype == "ident":
                         if j == len(self.nodes[i].body) - 1:
-                            self.print_identification(self.nodes[i].body[j], self.nodes[i].attachment, True)
+                            self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, True)
                         else:
-                            self.print_identification(self.nodes[i].body[j], self.nodes[i].attachment, False)
+                            self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, False)
 
                     else:
                         if j == len(self.nodes[i].body) - 1:

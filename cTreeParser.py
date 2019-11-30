@@ -106,24 +106,34 @@ def p_blocks_list(t):
     '''blocks_list : 
                     | blocks_list block_dot
                    | blocks_list identification_block'''
+    if len(t) > 2:
+        mytree.add_block(t[2])
 
 def p_block_dot(t):
     '''block_dot : begin expression_list END DOT'''
-    mytree.add_block(t[2])
+    t[0] = t[2]
     mytree.begin_index -= 1
 
 def p_expression_list(t):
     '''expression_list : 
                        | expression_list additive_expression SEMICOLON
-                       | expression_list  assign SEMICOLON'''
+                       | expression_list  assign SEMICOLON
+                       | expression_list identification_block'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
+
+
+
 def p_assign(t):
     '''assign : ident COLON EQUALS additive_expression'''
-    expr_index =  str(len(mytree.expr_list))
+    expr_index = str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
     t[0] = expr_index
+
+def p_ident(t):
+    '''ident : ident_list'''
+    t[0] = t[1]
 
 def p_additive_expression(t):
     '''additive_expression : multiplicative_expression
@@ -175,15 +185,20 @@ def p_group(t):
 
 def p_identification_block(t):
     '''identification_block : VAR identification_list'''
+    t[0] = t[2]
 
 def p_identification_list(t):
     '''identification_list : 
                            | identification_list identification'''
+    if len(t) > 2:
+        t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
 def p_identification(t):
     '''identification : ident_list COLON type SEMICOLON
                       | ident_list COLON type_arr SEMICOLON'''
-    mytree.nodes.append(my_ast_nodes.IdentificationNode(mytree.idents, t[3], mytree.begin_index))
+    add_index = str(len(mytree.expr_list))
+    mytree.expr_list[add_index] = my_ast_nodes.IdentificationNode(mytree.idents, t[3], mytree.begin_index)
+    t[0] = add_index
     mytree.idents = []
 
 def p_ident_list(t):
@@ -227,10 +242,13 @@ def p_error(t):
 # test2 := a + b;
 
 data = '''
-begin
-mytest :=  a * b;
-test2 := a + b; 
-end.
+    var
+    a, asap : integer;  
+
+    begin 
+
+    a := 20 + 30;
+    end.
 '''
 
 parser = yacc.yacc()
