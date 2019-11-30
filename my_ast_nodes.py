@@ -28,22 +28,38 @@ class Tree:
         elif node.classtype == "assign":
             self.print_assign(node, attachment, last)
 
+        elif node.classtype == "if_block":
+             self.print_if_block(node, attachment, last)
+
+    def print_if_block(self, node, attachment, last):
+        print("│" + " "*attachment + "├ if")
+        self.fork(self.expr_list[node.condition], attachment, False)
+        print("│" + " "*attachment + "├ then")
+        for i in range(len(node.then_block)):
+            if node.then_block[i] in self.expr_list:
+                self.fork(self.expr_list[node.then_block[i]], attachment, False)
+        if node.else_block is not None:
+            print("│" + " "*attachment + "├ else")
+            for i in range(len(node.else_block)):
+                if node.else_block[i] in self.expr_list:
+                    self.fork(self.expr_list[node.else_block[i]], attachment, False)
+
     def print_additive(self, node, attachment, last):
             if attachment > 0:
                 if last:
                     if node.op is not None:
                         print("│" + " "*attachment + "└ " + node.op)
                     if node.left_index in self.expr_list:
-                        self.fork(self.expr_list[node.left_index], attachment, last)
+                        self.fork(self.expr_list[node.left_index], attachment , last)
                     if node.right_index in self.expr_list:
                         self.fork(self.expr_list[node.right_index], attachment, last)
                 else:
                     if node.op is not None:
                         print("│" + " "*attachment + "├ " + node.op)
                     if node.left_index in self.expr_list:
-                        self.fork(self.expr_list[node.left_index], attachment, last)
+                        self.fork(self.expr_list[node.left_index], attachment , last)
                     if node.right_index in self.expr_list:
-                        self.fork(self.expr_list[node.right_index], attachment, last)
+                        self.fork(self.expr_list[node.right_index], attachment , last)
             else:
                 if node.op is not None:
                     print("├ " + node.op)
@@ -82,15 +98,15 @@ class Tree:
                     if node.operator is not None:
                         print("│ "*attachment + "├ " + node.operator)
                     if node.value1 is not None:
-                        print("│ "*attachment + "│ ├ " + node.value1)
+                        print("│ "*attachment + "│ ├ " + str(node.value1))
                     if node.value2 is not None:
-                        print("│ "*attachment + "│ └ " + node.value2)
+                        print("│ "*attachment + "│ └ " + str(node.value2))
                     
             else:
                 if node.operator is not None:
                     print("├ " + node.operator)
                 if node.value1 is not None:
-                    print("│ ├ " + node.value1)
+                    print("│ ├ " + str( node.value1))
                 if node.value2 is not None:
                     print("│ └ " + node.value2)
 
@@ -160,8 +176,6 @@ class Tree:
                             self.fork(self.nodes[i].body[j], attachment + 1, False)
 
                     
-
-                    
 class Block:
     def __init__(self, body):
         self.body = body
@@ -193,6 +207,19 @@ class ExpressionNode:
         self.value1 = value1
         self.value2 = value2
         self.operator = op
+
+class IfBlock:
+    def __init__(self, condition, then_block, else_block):
+        self.classtype = "if_block"
+        self.condition = condition
+
+        if then_block is not None:
+            self.then_block = then_block.split(' ')
+
+        if else_block is not None:
+            self.else_block = else_block.split(' ')
+        else:
+            self.else_block = None
 
 class Unary:
     @staticmethod

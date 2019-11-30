@@ -67,11 +67,6 @@ t_AND = r'&'
 
 t_ignore = ' \r\t'
 
-precedence = (
-     ('left', 'EQUALS'),
-     ('left', 'COLON'),
- )
-
 mytree = my_ast_nodes.Tree()
 
 def t_IDENT(t):
@@ -120,28 +115,65 @@ def p_block_dot(t):
     t[0] = t[2]
     mytree.begin_index -= 1
 
+def p_if_then_else(t):
+    '''if_then_else : IF equality_expression THEN begin expression_list END ELSE begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.IfBlock(t[2], t[5], t[9])
+    t[0] = expr_index
+
+def p_if_then(t):
+    '''if_then : IF equality_expression THEN begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.IfBlock(t[2], t[5], None)
+    t[0] = expr_index
+
+
 def p_expression_list(t):
     '''expression_list : 
-                       | expression_list additive_expression SEMICOLON
                        | expression_list  assign SEMICOLON
-                       | expression_list identification_block'''
+                       | expression_list identification_block
+                       | expression_list if_then
+                       | expression_list if_then_else'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
 
-
-
 def p_assign(t):
-    '''assign : ident COLON EQUALS additive_expression'''
+    '''assign : ident COLON EQUALS additive_expression
+              | ident COLON EQUALS equality_expression'''
     expr_index = str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
     t[0] = expr_index
 
-# def p_assign_start(t):
-#     '''assign_start : 
-#                     | ident_list COLON EQUALS'''
-#     t[0] = t[1]
+# -----------------------------------------------------
+def p_equality_expression(t):
+    '''equality_expression : relational_expression
+                           | equality_expression EQUALS relational_expression'''
+    if len(t) > 2:
+        add_index = str(len(mytree.expr_list))
+        mytree.expr_list[add_index] = my_ast_nodes.AdditiveNode(t[1], t[2], t[3])
+        t[0] = add_index
+    else:
+        expr_index =  str(len(mytree.expr_list))
+        mytree.expr_list[expr_index] = my_ast_nodes.AdditiveNode(t[1], None, None)
+        t[0] = expr_index
 
+
+def p_relational_expression(t):
+    '''relational_expression : additive_expression
+                             | relational_expression GT additive_expression
+                             | relational_expression LT additive_expression
+                             | relational_expression GE additive_expression
+                             | relational_expression LE additive_expression'''
+    if len(t) > 2:
+        add_index = str(len(mytree.expr_list))
+        mytree.expr_list[add_index] = my_ast_nodes.AdditiveNode(t[1], t[2], t[3])
+        t[0] = add_index
+    else:
+        expr_index =  str(len(mytree.expr_list))
+        mytree.expr_list[expr_index] = my_ast_nodes.AdditiveNode(t[1], None, None)
+        t[0] = expr_index
+# -----------------------------------------
 
 def p_additive_expression(t):
     '''additive_expression : multiplicative_expression
@@ -246,21 +278,29 @@ def p_error(t):
     #   a, asap : integer;  
     #   b, asasas, asdafsf : char;
     #   c, d : array [1 .. 3] of integer;
+    #   rav
     
 # mytest :=  a * b;
 # test2 := a + b;
 
 data = '''
-    var
-    a, asap : integer;  
-    rav
-
+      var
+      a, asap : integer;  
+      rav
     begin 
-    var
-    a, asap : integer; 
-    rav
-
+      var
+      a, asap : integer;  
+      b, asasas, asdafsf : char;
+      rav
+    c := f - 40;
+    if 20 = 20 then 
+    begin
     a := 20 + 30;
+    end
+    else
+    begin
+    c := rr / 34;
+    end;
     end.
 '''
 
