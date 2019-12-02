@@ -323,7 +323,29 @@ def p_error(t):
     global prog
     prog = None
 
+# data = '''
+#     var
+#     a, asap : integer;  
+#     rav
+
+#     procedure MaxNumber(a,b: integer;);
+#         begin
+#         if a>b then
+#             begin
+#             max:=a;
+#             end
+#         else
+#             begin
+#             max:=b;
+#             end;
+#         end;
+# '''
+
 data = '''
+    var
+    a, asap : integer;  
+    rav
+
     procedure MaxNumber(a,b: integer;);
         begin
         if a>b then
@@ -336,61 +358,39 @@ data = '''
             end;
         end;
 
-    begin
-        MaxNumber(rr, tt);
-    end.
+        begin 
+            var
+            a, asap : integer;  
+            b, asasas, asdafsf : char;
+            rav
+            c := f - 40;
+            if 20 = 20 then 
+                begin
+                a := 20 + 30;
+                end
+            else
+                begin
+                c := rr / 34;
+                end;
+
+            MaxNumber(rr, tt);
+
+            for i := 0 to 10 do 
+                begin
+                ttt := 55 * 100;
+                end;
+            while r > u do
+                begin
+                i := 60/6;
+                end;
+            do 
+            t := 50;
+            while i < 10 ;
+        end.
 '''
 
-# data = '''
-    # begin
-    # MaxNumber ( 10, rr ) ;
-    # end.
-#     var
-#     a, asap : integer;  
-#     rav
-
-#     procedure MaxNumber(a,b: integer;);
-#         begin
-#         if a>b then
-#             begin
-#             max:=a 
-#             end;
-#         else
-#             begin
-#             max:=b;
-#             end;
-#         end;
-
-#         begin 
-#             var
-#             a, asap : integer;  
-#             b, asasas, asdafsf : char;
-#             rav
-#             c := f - 40;
-#             if 20 = 20 then 
-#                 begin
-#                 a := 20 + 30;
-#                 end
-#             else
-#                 begin
-#                 c := rr / 34;
-#                 end;
-#             for i := 0 to 10 do 
-#                 begin
-#                 ttt := 55 * 100;
-#                 end;
-#             while r > u do
-#                 begin
-#                 i := 60/6;
-#                 end;
-#             do 
-#             t := 50;
-#             while i < 10 ;
-#         end.
-# '''
-
 parser = yacc.yacc()
-parser.parse(data, debug=True)
-# parser.parse(data)
+# parser.parse(data, debug=True)
+parser.parse(data)
 
 mytree.print_tree()

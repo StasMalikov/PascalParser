@@ -85,7 +85,7 @@ class Tree:
         print("│" + " "*attachment + "├ procedure_call " + node.name)
         print("│" + " "*attachment + "├ params:")
         for i in range(len(node.params)):
-            print("│" + " "*attachment + "  ├ " + node.params[i])
+            print("│" + " "*attachment + "  ├ " + str(node.params[i]))
 
     def print_procedure(self ,node, attachment, last):
         print("│" + " "*attachment + "├ procedure " + node.name)
