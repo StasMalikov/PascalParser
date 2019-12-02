@@ -40,6 +40,9 @@ class Tree:
         elif node.classtype == "do_while_block":
             self.print_do_while_block(node, attachment, last)
 
+        elif node.classtype == "procedure_call":
+            self.print_procedure_call(node, attachment, last)
+
 
     def print_if_block(self, node, attachment, last):
         print("│" + " "*attachment + "├ if")
@@ -78,6 +81,12 @@ class Tree:
             if node.body[i] in self.expr_list:
                 self.fork(self.expr_list[node.body[i]], attachment, False)
 
+    def print_procedure_call(self ,node, attachment, last):
+        print("│" + " "*attachment + "├ procedure_call " + node.name)
+        print("│" + " "*attachment + "├ params:")
+        for i in range(len(node.params)):
+            print("│" + " "*attachment + "  ├ " + node.params[i])
+
     def print_procedure(self ,node, attachment, last):
         print("│" + " "*attachment + "├ procedure " + node.name)
         print("│" + " "*attachment + "├ params:")
@@ -89,9 +98,6 @@ class Tree:
             if node.body[i] in self.expr_list:
                 self.fork(self.expr_list[node.body[i]], attachment, False)
     
-        
-
-
 
     def print_additive(self, node, attachment, last):
             if attachment > 0:
@@ -277,6 +283,17 @@ class Procedure:
 
         if param_list_index is not None:
             self.param_list_index = param_list_index.split(' ')
+
+class ProcedureCall:
+    def __init__(self, name, params):
+        self.classtype = "procedure_call"
+        self.name = name
+        self.params = []
+        for i in range(len(params)):
+            if params[i] is not None:
+                self.params.append(params[i])
+        # if params is not None:
+        #     self.params = params.split(' ')
 
 class WhileNode:
     def __init__(self, condition_index, body):

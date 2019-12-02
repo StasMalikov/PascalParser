@@ -154,6 +154,13 @@ def p_if_then(t):
     mytree.expr_list[expr_index] = my_ast_nodes.IfBlock(t[2], t[5], None)
     t[0] = expr_index
 
+def p_proc_call(t):
+    '''proc_call : ident LPAREN params RPAREN SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.ProcedureCall(t[1], mytree.idents)
+    mytree.idents = []
+    t[0] = expr_index
+
 
 def p_expression_list(t):
     '''expression_list : 
@@ -163,7 +170,8 @@ def p_expression_list(t):
                        | expression_list if_then_else
                        | expression_list for_block
                        | expression_list dowhile_block
-                       | expression_list while_block'''
+                       | expression_list while_block
+                       | expression_list proc_call'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
@@ -271,6 +279,17 @@ def p_identification(t):
     t[0] = add_index
     mytree.idents = []
 
+def p_params(t):
+    '''params : ident
+              | NUMBER
+              | params COMMA ident
+              | params COMMA NUMBER'''
+    if len(t) > 2:
+        mytree.idents.append(t[3])
+    else:
+        mytree.idents.append(t[1])
+
+
 def p_ident_list(t):
     '''ident_list : ident
                   | ident_list COMMA ident '''
@@ -316,9 +335,16 @@ data = '''
             max:=b;
             end;
         end;
+
+    begin
+        MaxNumber(rr, tt);
+    end.
 '''
 
 # data = '''
+    # begin
+    # MaxNumber ( 10, rr ) ;
+    # end.
 #     var
 #     a, asap : integer;  
 #     rav
