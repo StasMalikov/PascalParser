@@ -83,9 +83,10 @@ class Tree:
 
     def print_procedure_call(self ,node, attachment, last):
         print("│" + " "*attachment + "├ procedure_call " + node.name)
-        print("│" + " "*attachment + "├ params:")
-        for i in range(len(node.params)):
-            print("│" + " "*attachment + "  ├ " + str(node.params[i]))
+        if len(node.params) > 0:
+            print("│" + " "*attachment + "├ params:")
+            for i in range(len(node.params)):
+                print("│" + " "*attachment + "  ├ " + str(node.params[i]))
 
     def print_procedure(self ,node, attachment, last):
         print("│" + " "*attachment + "├ procedure " + node.name)
@@ -289,9 +290,10 @@ class ProcedureCall:
         self.classtype = "procedure_call"
         self.name = name
         self.params = []
-        for i in range(len(params)):
-            if params[i] is not None:
-                self.params.append(params[i])
+        if params is not None:
+            for i in range(len(params)):
+                if params[i] is not None:
+                    self.params.append(params[i])
         # if params is not None:
         #     self.params = params.split(' ')
 

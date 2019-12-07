@@ -162,6 +162,13 @@ def p_proc_call(t):
     t[0] = expr_index
 
 
+def p_proc_call_empty(t):
+    '''proc_call_empty : ident LPAREN RPAREN SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.ProcedureCall(t[1], None)
+    mytree.idents = []
+    t[0] = expr_index
+
 def p_expression_list(t):
     '''expression_list : 
                        | expression_list  assign SEMICOLON
@@ -171,7 +178,8 @@ def p_expression_list(t):
                        | expression_list for_block
                        | expression_list dowhile_block
                        | expression_list while_block
-                       | expression_list proc_call'''
+                       | expression_list proc_call
+                       | expression_list proc_call_empty'''
     if len(t) > 2:
         t[0] = str(str(t[1]) + ' ' + str(t[2]))
 
@@ -374,6 +382,8 @@ data = '''
                 end;
 
             MaxNumber(rr, tt);
+
+            MinNumber();
 
             for i := 0 to 10 do 
                 begin
