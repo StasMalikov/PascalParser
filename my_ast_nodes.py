@@ -216,23 +216,22 @@ class Tree:
         print("...")
         attachment = 0
         for i in range(len(self.nodes)):
-            if self.nodes[i].classtype == "block":
-                for j in range(len(self.nodes[i].body)):
+            for j in range(len(self.nodes[i].body)):
 
-                    if self.nodes[i].body[j].classtype == "ident":
-                        if j == len(self.nodes[i].body) - 1:
-                            self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, True)
-                        else:
-                            self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, False)
-
-                    elif self.nodes[i].body[j].classtype == "procedure":
-                        self.print_procedure(self.nodes[i].body[j], attachment + 1, False)
-
+                if self.nodes[i].body[j].classtype == "ident":
+                    if j == len(self.nodes[i].body) - 1:
+                        self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, True)
                     else:
-                        if j == len(self.nodes[i].body) - 1:
-                            self.fork(self.nodes[i].body[j], attachment + 1, True)
-                        else:
-                            self.fork(self.nodes[i].body[j], attachment + 1, False)
+                        self.print_identification(self.nodes[i].body[j], self.nodes[i].body[j].attachment, False)
+
+                elif self.nodes[i].body[j].classtype == "procedure":
+                    self.print_procedure(self.nodes[i].body[j], attachment + 1, False)
+
+                else:
+                    if j == len(self.nodes[i].body) - 1:
+                        self.fork(self.nodes[i].body[j], attachment + 1, True)
+                    else:
+                        self.fork(self.nodes[i].body[j], attachment + 1, False)
 
                     
 class Block:
