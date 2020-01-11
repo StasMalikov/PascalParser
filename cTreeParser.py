@@ -171,7 +171,7 @@ def p_proc_call_empty(t):
 
 def p_expression_list(t):
     '''expression_list : 
-                       | expression_list  assign SEMICOLON
+                       | expression_list assign SEMICOLON
                        | expression_list identification_block
                        | expression_list if_then
                        | expression_list if_then_else
@@ -186,7 +186,9 @@ def p_expression_list(t):
 
 def p_assign(t):
     '''assign : ident COLON EQUALS additive_expression
-              | ident COLON EQUALS equality_expression'''
+              | ident COLON EQUALS equality_expression
+              | arr_var COLON EQUALS additive_expression
+              | arr_var COLON EQUALS equality_expression'''
     expr_index = str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.AssignNode(t[1], t[4])
     t[0] = expr_index
@@ -263,9 +265,15 @@ def p_unary_expression(t):
 
 def p_group(t):
     '''group : ident
+             | arr_var
              | NUMBER
              | BOOL'''
     t[0] = t[1]
+
+def p_arr_var(t):
+    '''arr_var : ident LBRACE NUMBER RBRACE
+               | ident LBRACE ident RBRACE'''
+    t[0] = t[1] + t[2] + str(t[3]) + t[4]
 
 # -------------------------------------------------------------------------------------------
 
@@ -290,8 +298,10 @@ def p_identification(t):
 def p_params(t):
     '''params : ident
               | NUMBER
+              | arr_var
               | params COMMA ident
-              | params COMMA NUMBER'''
+              | params COMMA NUMBER
+              | params COMMA arr_var'''
     if len(t) > 2:
         mytree.idents.append(t[3])
     else:
@@ -300,7 +310,7 @@ def p_params(t):
 
 def p_ident_list(t):
     '''ident_list : ident
-                  | ident_list COMMA ident '''
+                  | ident_list COMMA ident'''
     if len(t) > 2:
         mytree.idents.append(t[3])
     else:
@@ -349,29 +359,69 @@ def p_error(t):
 #         end;
 # '''
 
+# data = '''
+#     var
+#     a, asap : integer;  
+#     rav
+
+#     procedure MaxNumber(a,b: integer;);
+#         begin
+#         if a>b then
+#             begin
+#             max:=a; 
+#             end
+#         else
+#             begin
+#             max:=b;
+#             end;
+#         end;
+
+#         begin 
+#             var
+#             a, asap : integer;  
+#             b, asasas, asdafsf : char;
+#             rav
+#             c := f - 40;
+#             if 20 = 20 then 
+#                 begin
+#                 a := 20 + 30;
+#                 end
+#             else
+#                 begin
+#                 c := rr / 34;
+#                 end;
+
+#             MaxNumber(rr, tt);
+
+#             MinNumber();
+
+#             for i := 0 to 10 do 
+#                 begin
+#                 ttt := 55 * 100;
+#                 end;
+#             while r > u do
+#                 begin
+#                 i := 60/6;
+#                 end;
+#             do 
+#             t := 50;
+#             while i < 10 ;
+#         end.
+# '''
+
+
 data = '''
     var
     a, asap : integer;  
     rav
-
-    procedure MaxNumber(a,b: integer;);
-        begin
-        if a>b then
-            begin
-            max:=a; 
-            end
-        else
-            begin
-            max:=b;
-            end;
-        end;
 
         begin 
             var
             a, asap : integer;  
             b, asasas, asdafsf : char;
             rav
-            c := f - 40;
+            c[i] := b[10] - 40;
+            Max(tt[7], yy[i]);
             if 20 = 20 then 
                 begin
                 a := 20 + 30;
@@ -380,22 +430,6 @@ data = '''
                 begin
                 c := rr / 34;
                 end;
-
-            MaxNumber(rr, tt);
-
-            MinNumber();
-
-            for i := 0 to 10 do 
-                begin
-                ttt := 55 * 100;
-                end;
-            while r > u do
-                begin
-                i := 60/6;
-                end;
-            do 
-            t := 50;
-            while i < 10 ;
         end.
 '''
 
