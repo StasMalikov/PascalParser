@@ -26,7 +26,7 @@ reserved = {
     'rav': 'RAV',
     'char': 'CHAR',
     'integer': 'INT',
-    'Boolean': 'BOOL',
+    'boolean': 'BOOL',
     'div': 'DIV',
     'mod': 'MOD',
     'not': 'NOT',
@@ -404,31 +404,78 @@ def p_error(t):
 
 data = '''
     var
-    a, asap : integer;  
+    var1, var2 : integer;
+    arr1 : array [1..10] of integer;
+    var3 : boolean;
+    var4 : char;
     rav
 
     procedure MaxNumber(a,b: integer;);
         begin
-        if a>b then
+        if a >= b then
             begin
-            max:=a; 
-            end
-        else
-            begin
-            max:=b;
+            max:= - a; 
             end;
         end;
 
-    function MaxNumber(a,b: integer;) : integer;
+        procedure MaxNumber();
         begin
-        if a>b then
+        if a >= b then
             begin
-            max:=a; 
+            max:= - a; 
+            end;
+        end;
+
+    function MinNumber(a,b: integer;) : integer;
+        begin
+        if a <= b then
+            begin
+            max:= not a; 
             end
         else
             begin
             max:=b;
             end;
+        MinNumber := 100;
+        end;
+
+    function MinNumber(var a,b: integer; rav) : integer;
+        begin
+        if a <= b then
+            begin
+            max:= not a; 
+            end
+        else
+            begin
+            max:=b;
+            end;
+        MinNumber := 100;
+        end;
+
+        function MinNumber(var a,b: integer; rav a,b: integer;) : integer;
+        begin
+        if a <= b then
+            begin
+            max:= not a; 
+            end
+        else
+            begin
+            max:=b;
+            end;
+        MinNumber := 100;
+        end;
+
+        function MinNumber() : integer;
+        begin
+        if a <= b then
+            begin
+            max:= not a; 
+            end
+        else
+            begin
+            max:=b;
+            end;
+        MinNumber := 100;
         end;
 
         begin 

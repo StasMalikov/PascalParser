@@ -122,10 +122,11 @@ class Tree:
 
     def print_procedure(self ,node, attachment, last):
         print("│" + " "*attachment + "├ procedure " + node.name)
-        print("│" + " "*attachment + "├ params:")
-        for i in range(len(node.param_list_index)):
-            if node.param_list_index[i] in self.expr_list:
-                self.print_identification(self.expr_list[node.param_list_index[i]], attachment, False)
+        if node.param_list_index is not None:
+            print("│" + " "*attachment + "├ params:")
+            for i in range(len(node.param_list_index)):
+                if node.param_list_index[i] in self.expr_list:
+                    self.print_identification(self.expr_list[node.param_list_index[i]], attachment, False)
         print("│" + " "*attachment + "├ body:")
         for i in range(len(node.body)):
             if node.body[i] in self.expr_list:
@@ -397,6 +398,7 @@ class Unary:
         if oper == "not":
             if value == "true":
                 return "false"
-
-            if value == "false":
+            elif value == "false":
                 return "true"
+            else:
+                return "not " + value
