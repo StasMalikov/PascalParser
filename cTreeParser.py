@@ -108,7 +108,12 @@ def p_blocks_list(t):
     '''blocks_list : 
                     | blocks_list block_dot
                     | blocks_list identification_block
-                    | blocks_list procedure_block'''
+                    | blocks_list procedure_block
+                    | blocks_list function_block
+                    | blocks_list procedure_noparam_block
+                    | blocks_list function_noparam_block
+                    | blocks_list function_norparam_block
+                    | blocks_list function_full_no_param_block'''
     if len(t) > 2:
         mytree.add_block(t[2])
 
@@ -122,6 +127,39 @@ def p_procedure_block(t):
     expr_index = str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.Procedure(t[2], t[4], t[8])
     t[0] = expr_index
+
+def p_procedure_noparam_block(t):
+    '''procedure_noparam_block : PROCEDURE ident LPAREN RPAREN SEMICOLON begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.Procedure(t[2], None, t[7])
+    t[0] = expr_index
+
+
+def p_function_block(t):
+    '''function_block : FUNCTION ident LPAREN identification_block identification_list RPAREN COLON type SEMICOLON begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.Function(t[2], t[4], t[5], t[8], t[11])
+    t[0] = expr_index
+
+def p_function_noparam_block(t):
+    '''function_noparam_block : FUNCTION ident LPAREN identification_block RPAREN COLON type SEMICOLON begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.Function(t[2], t[4], None, t[7], t[10])
+    t[0] = expr_index
+
+def p_function_no_rparam_block(t):
+    '''function_norparam_block : FUNCTION ident LPAREN identification_list RPAREN COLON type SEMICOLON begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.Function(t[2], None, t[4], t[7], t[10])
+    t[0] = expr_index
+
+def p_function_full_no_param_block(t):
+    '''function_full_no_param_block : FUNCTION ident LPAREN RPAREN COLON type SEMICOLON begin expression_list END SEMICOLON'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.Function(t[2], None, None, t[6], t[9])
+    t[0] = expr_index
+
+
 
 def p_while_block(t):
     '''while_block : WHILE equality_expression DO begin expression_list END SEMICOLON'''
@@ -153,6 +191,22 @@ def p_if_then(t):
     expr_index = str(len(mytree.expr_list))
     mytree.expr_list[expr_index] = my_ast_nodes.IfBlock(t[2], t[5], None)
     t[0] = expr_index
+
+
+def p_func_call(t):
+    '''func_call : ident LPAREN params RPAREN'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.FunctionCall(t[1], mytree.idents)
+    mytree.idents = []
+    t[0] = expr_index
+
+def p_func_call_empty(t):
+    '''func_call_empty : ident LPAREN RPAREN'''
+    expr_index = str(len(mytree.expr_list))
+    mytree.expr_list[expr_index] = my_ast_nodes.FunctionCall(t[1], None)
+    mytree.idents = []
+    t[0] = expr_index
+
 
 def p_proc_call(t):
     '''proc_call : ident LPAREN params RPAREN SEMICOLON'''
@@ -239,6 +293,8 @@ def p_additive_expression(t):
 
 def p_multiplicative_expression(t):
     '''multiplicative_expression : unary_expression
+                                 | func_call
+                                 | func_call_empty
                                  | multiplicative_expression MUL unary_expression
                                  | multiplicative_expression FSLASH unary_expression
                                  | multiplicative_expression MOD unary_expression
@@ -249,9 +305,14 @@ def p_multiplicative_expression(t):
         mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(value_t1 , t[2], t[3])
         t[0] = expr_index
     else:
-        expr_index =  str(len(mytree.expr_list))
-        mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], None, None)
-        t[0] = expr_index
+        if t.slice[1].type == "func_call_empty" or t.slice[1].type == "func_call":
+            expr_index =  str(len(mytree.expr_list))
+            mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], "function", None)
+            t[0] = expr_index
+        else:
+            expr_index =  str(len(mytree.expr_list))
+            mytree.expr_list[expr_index] = my_ast_nodes.ExpressionNode(t[1], None, None)
+            t[0] = expr_index
 
 
 def p_unary_expression(t):
@@ -326,7 +387,7 @@ def p_ident(t):
 
 def p_type_arr(t):
     '''type_arr : ARRAY LBRACE NUMBER DOTDOT NUMBER RBRACE OF type'''
-    t[0] = str(t[5]) +' '+ t[8]
+    t[0] = str(t[5]) + ' ' + t[8]
 
 
 def p_type(t):
@@ -341,87 +402,41 @@ def p_error(t):
     global prog
     prog = None
 
-# data = '''
-#     var
-#     a, asap : integer;  
-#     rav
-
-#     procedure MaxNumber(a,b: integer;);
-#         begin
-#         if a>b then
-#             begin
-#             max:=a;
-#             end
-#         else
-#             begin
-#             max:=b;
-#             end;
-#         end;
-# '''
-
-# data = '''
-#     var
-#     a, asap : integer;  
-#     rav
-
-#     procedure MaxNumber(a,b: integer;);
-#         begin
-#         if a>b then
-#             begin
-#             max:=a; 
-#             end
-#         else
-#             begin
-#             max:=b;
-#             end;
-#         end;
-
-#         begin 
-#             var
-#             a, asap : integer;  
-#             b, asasas, asdafsf : char;
-#             rav
-#             c := f - 40;
-#             if 20 = 20 then 
-#                 begin
-#                 a := 20 + 30;
-#                 end
-#             else
-#                 begin
-#                 c := rr / 34;
-#                 end;
-
-#             MaxNumber(rr, tt);
-
-#             MinNumber();
-
-#             for i := 0 to 10 do 
-#                 begin
-#                 ttt := 55 * 100;
-#                 end;
-#             while r > u do
-#                 begin
-#                 i := 60/6;
-#                 end;
-#             do 
-#             t := 50;
-#             while i < 10 ;
-#         end.
-# '''
-
-
 data = '''
     var
     a, asap : integer;  
     rav
+
+    procedure MaxNumber(a,b: integer;);
+        begin
+        if a>b then
+            begin
+            max:=a; 
+            end
+        else
+            begin
+            max:=b;
+            end;
+        end;
+
+    function MaxNumber(a,b: integer;) : integer;
+        begin
+        if a>b then
+            begin
+            max:=a; 
+            end
+        else
+            begin
+            max:=b;
+            end;
+        end;
 
         begin 
             var
             a, asap : integer;  
             b, asasas, asdafsf : char;
             rav
-            c[i] := b[10] - 40;
-            Max(tt[7], yy[i]);
+            c := f - 40;
             if 20 = 20 then 
                 begin
                 a := 20 + 30;
@@ -430,11 +445,51 @@ data = '''
                 begin
                 c := rr / 34;
                 end;
+
+            MaxNumber(rr, tt);
+
+            MinNumber();
+
+            for i := 0 to 10 do 
+                begin
+                ttt := 55 * 100;
+                end;
+            while r > u do
+                begin
+                i := 60/6;
+                end;
+            do 
+            t := 50;
+            while i < 10 ;
         end.
 '''
 
+# data = '''
+
+#     procedure MaxNumber(a,b: integer;);
+#         begin
+#         a := 10;
+#         end;
+
+#     function MaxNumber(a,b: integer;) : integer;
+#         begin
+#         a := 10;
+#         end;
+
+#     begin 
+#         var
+#         a, asap : integer;  
+#         b, asasas, asdafsf : char;
+#         rav
+#         a := 10 + 10;
+#     end.
+# '''
+
+
 parser = yacc.yacc()
+
 # parser.parse(data, debug=True)
+
 parser.parse(data)
 
 mytree.print_tree()

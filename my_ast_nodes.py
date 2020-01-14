@@ -43,6 +43,9 @@ class Tree:
         elif node.classtype == "procedure_call":
             self.print_procedure_call(node, attachment, last)
 
+        elif node.classtype == "function_call":
+            self.print_functon_call(node, attachment, last)
+
 
     def print_if_block(self, node, attachment, last):
         print("│" + " "*attachment + "├ if")
@@ -87,6 +90,35 @@ class Tree:
             print("│" + " "*attachment + "├ params:")
             for i in range(len(node.params)):
                 print("│" + " "*attachment + "  ├ " + str(node.params[i]))
+
+    def print_functon_call(self ,node, attachment, last):
+        print("│" + " "*attachment + "├ functon_call " + node.name)
+        if len(node.params) > 0:
+            print("│" + " "*attachment + "├ params:")
+            for i in range(len(node.params)):
+                print("│" + " "*attachment + "  ├ " + str(node.params[i]))
+
+
+    def print_function(self ,node, attachment, last):
+        print("│" + " "*attachment + "├ function " + node.name)
+        print("│" + " "*attachment + "├ return type: " + node.return_type)
+        if node.param_list_index is not None:
+            print("│" + " "*attachment + "├ params:")
+            for i in range(len(node.param_list_index)):
+                if node.param_list_index[i] in self.expr_list:
+                    self.print_identification(self.expr_list[node.param_list_index[i]], attachment, False)
+
+        if node.return_param_list_index is not None:
+            print("│" + " "*attachment + "├ return params:")
+            for i in range(len(node.return_param_list_index)):
+                if node.return_param_list_index[i] in self.expr_list:
+                    self.print_identification(self.expr_list[node.return_param_list_index[i]], attachment, False)
+
+        print("│" + " "*attachment + "├ body:")
+        for i in range(len(node.body)):
+            if node.body[i] in self.expr_list:
+                self.fork(self.expr_list[node.body[i]], attachment, False)
+
 
     def print_procedure(self ,node, attachment, last):
         print("│" + " "*attachment + "├ procedure " + node.name)
@@ -227,11 +259,15 @@ class Tree:
                 elif self.nodes[i].body[j].classtype == "procedure":
                     self.print_procedure(self.nodes[i].body[j], attachment + 1, False)
 
+                elif self.nodes[i].body[j].classtype == "function":
+                    self.print_function(self.nodes[i].body[j], attachment + 1, False)
+
                 else:
                     if j == len(self.nodes[i].body) - 1:
                         self.fork(self.nodes[i].body[j], attachment + 1, True)
                     else:
                         self.fork(self.nodes[i].body[j], attachment + 1, False)
+        print("end of tree")
 
                     
 class Block:
@@ -274,10 +310,39 @@ class ForNode:
         if body is not None:
             self.body = body.split(' ')
 
+class Function:
+    def __init__(self, name, return_param_list_index, param_list_index, return_type, body):
+        self.classtype = "function"
+        self.name = name
+        self.return_type = return_type
+        self.body = None
+        self.param_list_index = None
+        self.return_param_list_index = None
+        if body is not None:
+            self.body = body.split(' ')
+
+        if param_list_index is not None:
+            self.param_list_index = param_list_index.split(' ')
+
+        if return_param_list_index is not None:
+            self.return_param_list_index = return_param_list_index.split(' ')
+
+
+class FunctionCall:
+    def __init__(self, name, params):
+        self.classtype = "function_call"
+        self.name = name
+        self.params = []
+        if params is not None:
+            for i in range(len(params)):
+                if params[i] is not None:
+                    self.params.append(params[i])
+
 class Procedure:
     def __init__(self, name, param_list_index, body):
         self.classtype = "procedure"
         self.name = name
+        self.param_list_index = None
         if body is not None:
             self.body = body.split(' ')
 
