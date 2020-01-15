@@ -557,6 +557,5 @@ parser.parse(data)
 
 
 sm = SemanticAnalyzer(mytree)
+mytree.print_tree()
 sm.print_idents()
-# mytree.print_tree()
-
