@@ -7,7 +7,7 @@ class Tree:
         self.var_global = False
         self.var_block = False
 
-    def add_block(self, indexes_string):
+    def add_block(self, indexes_string, btype):
         if indexes_string is not None:
             arr_indexes = indexes_string.split(' ')
             body = []
@@ -15,7 +15,7 @@ class Tree:
                 if arr_indexes[i] in self.expr_list:
                     body.append(self.expr_list[arr_indexes[i]])
         
-            self.nodes.append(Block(body))
+            self.nodes.append(Block(body, btype))
 
     """Выбирает метод для отрисовки элементов AST дерева """
     def fork(self, node, attachment, last):
@@ -272,9 +272,10 @@ class Tree:
 
                     
 class Block:
-    def __init__(self, body):
+    def __init__(self, body, btype):
         self.body = body
         self.classtype = "block"
+        self.type = btype
 
 class IdentificationNode:
     def __init__(self, values, _type, begin_index):

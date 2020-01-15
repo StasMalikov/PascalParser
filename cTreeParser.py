@@ -1,6 +1,7 @@
 import ply.lex as lex
 import my_ast_nodes
 import ply.yacc as yacc
+from semantic_analyzer import SemanticAnalyzer
 
 tokens = [
     'NUMBER', 'IDENT','PLUS','LPAREN', 'RPAREN','MUL','LBRACE', 'RBRACE','SEMICOLON',
@@ -114,8 +115,17 @@ def p_blocks_list(t):
                     | blocks_list function_noparam_block
                     | blocks_list function_norparam_block
                     | blocks_list function_full_no_param_block'''
+    # if t.slice[1].type == "identification_block"
     if len(t) > 2:
-        mytree.add_block(t[2])
+        if t.slice[2].type == "identification_block":
+            mytree.add_block(t[2], "ident_block")
+
+        elif t.slice[2].type == "block_dot":
+            mytree.add_block(t[2], "block_dot")
+
+        else:
+            mytree.add_block(t[2], "func_proc_block")
+
 
 def p_block_dot(t):
     '''block_dot : begin expression_list END DOT'''
@@ -412,6 +422,12 @@ data = '''
 
     procedure MaxNumber(a,b: integer;);
         begin
+            var
+            var1, var2 : integer;
+            arr1 : array [1..10] of integer;
+            var3 : boolean;
+            var4 : char;
+            rav
         if a >= b then
             begin
             max:= - a; 
@@ -539,4 +555,8 @@ parser = yacc.yacc()
 
 parser.parse(data)
 
-mytree.print_tree()
+
+sm = SemanticAnalyzer(mytree)
+sm.print_idents()
+# mytree.print_tree()
+
