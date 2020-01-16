@@ -13,16 +13,8 @@ reserved = {
     'array': 'ARRAY',
     'while': 'WHILE',
     'do': 'DO',
-    'write': 'WRITE',
-    'writeln': 'WRITELN',
-    'read': 'READ',
-    'readln': 'READLN',
-    'inc': 'INC',
-    'dec': 'DEC',
-    'abs': 'ABS',
     'begin': 'BEGIN',
     'end': 'END',
-    'program': 'PROGRAM',
     'var': 'VAR',
     'rav': 'RAV',
     'char': 'CHAR',
@@ -337,9 +329,21 @@ def p_unary_expression(t):
 def p_group(t):
     '''group : ident
              | arr_var
+             | char_var
              | NUMBER
-             | BOOL'''
+             | bool_var'''
     t[0] = t[1]
+
+
+def p_bool_var(t):
+    '''bool_var : TRUE
+                | FALSE'''
+    t[0] = str(t[1])
+
+def p_char_var(t):
+    '''char_var : SQUOTE ident SQUOTE
+                | SQUOTE NUMBER SQUOTE'''
+    t[0] = t[1] + str(t[2]) + t[3]
 
 def p_arr_var(t):
     '''arr_var : ident LBRACE NUMBER RBRACE
@@ -370,9 +374,13 @@ def p_params(t):
     '''params : ident
               | NUMBER
               | arr_var
+              | char_var
+              | bool_var
               | params COMMA ident
               | params COMMA NUMBER
-              | params COMMA arr_var'''
+              | params COMMA arr_var
+              | params COMMA char_var
+              | params COMMA bool_var'''
     if len(t) > 2:
         mytree.idents.append(t[3])
     else:
@@ -434,54 +442,8 @@ data = '''
             end;
         end;
 
-        procedure MaxNumber();
-        begin
-        if a >= b then
-            begin
-            max:= - a; 
-            end;
-        end;
 
     function MinNumber(a,b: integer;) : integer;
-        begin
-        if a <= b then
-            begin
-            max:= not a; 
-            end
-        else
-            begin
-            max:=b;
-            end;
-        MinNumber := 100;
-        end;
-
-    function MinNumber(var a,b: integer; rav) : integer;
-        begin
-        if a <= b then
-            begin
-            max:= not a; 
-            end
-        else
-            begin
-            max:=b;
-            end;
-        MinNumber := 100;
-        end;
-
-        function MinNumber(var a,b: integer; rav a,b: integer;) : integer;
-        begin
-        if a <= b then
-            begin
-            max:= not a; 
-            end
-        else
-            begin
-            max:=b;
-            end;
-        MinNumber := 100;
-        end;
-
-        function MinNumber() : integer;
         begin
         if a <= b then
             begin

@@ -14,7 +14,10 @@ class SemanticAnalyzer:
                 print(item.name + " " + item.type + " " + str(item.index) + " " + item.index_type + " " + str(item.value) + "\n")
 
             else:
-                print("function \n")
+                if item.type == "function":
+                    print("function " + item.name + " " + "return " + item.return_type + "\n")
+                else:
+                    print("procedure " + item.name + "\n")
                 print("params:")
                 for param in item.params:
                     print("----" + param.name + " " + param.type + " " + str(param.index) + " " + param.index_type + " " + str(param.value) + "\n")
@@ -60,6 +63,8 @@ class Ident:
         else:
             self.name = node.name
             self.type = node.classtype
+            if self.type == "function":
+                self.return_type = node.return_type
             self.body = []
             self.local_idents = []
             for i in range(len(node.body)):
