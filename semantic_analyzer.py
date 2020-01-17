@@ -2,11 +2,55 @@ class SemanticAnalyzer:
     def __init__(self, tree):
         self.tree = tree
         self.idents = []
+        self.blocs = []
         self.global_index = 0
         self.set_idents()
+        # self.semantics_check()
 
-    def check(self):
-        pass
+    def semantics_check(self):
+        for node in self.tree.nodes:
+            if node.type == "block_dot":
+                if not self.dot_block_check(node.body):
+                    return False
+
+        print("Ошибок не обнаружено.")
+
+    def dot_block_check(self, body):
+        for node in body:
+            if node.classtype == "ident":
+                continue
+
+            elif node.classtype == "assign":
+                if not self.check_assign(node):
+                    return False
+                
+    def find_var(self, name, index = None):
+        for ident in self.idents:
+            if ident.name == name:
+                if index is not None:
+                    if (index > 0) and (index <= ident.len):
+                        return True
+                    else:
+                      return False
+                else:
+                    return True
+
+        return False
+
+    def get_var_value(self, name, index = None):
+        for ident in self.idents:
+            if ident.name == name:
+                if index is not None:
+                    if (index > 0) and (index <= ident.len):
+                        return ident.value[index - 1]
+                else:
+                    return ident.value
+        return None
+
+    def check_assign(self, node):
+        if not self.find_var(node.ident):
+            print("Ошибка! Переменной '" + node.ident + "' не существует.")
+            return False
 
     def print_idents(self):
         for item in self.idents:
@@ -44,6 +88,7 @@ class SemanticAnalyzer:
             elif self.tree.nodes[i].type == "func_proc_block":
                 for j in range(len(self.tree.nodes[i].body)):
                     self.idents.append(Ident(None, None, None, None, None, True, self.tree.nodes[i].body[j], self.tree.expr_list))
+        
 
 class Ident:
     def __init__(self, name, vtype, index, index_type, value, func, node = None, expr_list = None):

@@ -2,6 +2,7 @@ import ply.lex as lex
 import my_ast_nodes
 import ply.yacc as yacc
 from semantic_analyzer import SemanticAnalyzer
+from code_generator import CodeGenerator
 
 tokens = [
     'NUMBER', 'IDENT','PLUS','LPAREN', 'RPAREN','MUL','LBRACE', 'RBRACE','SEMICOLON',
@@ -268,7 +269,9 @@ def p_relational_expression(t):
                              | relational_expression GT additive_expression
                              | relational_expression LT additive_expression
                              | relational_expression GE additive_expression
-                             | relational_expression LE additive_expression'''
+                             | relational_expression LE additive_expression
+                             | relational_expression AND additive_expression
+                             | relational_expression OR additive_expression'''
     if len(t) > 2:
         add_index = str(len(mytree.expr_list))
         mytree.expr_list[add_index] = my_ast_nodes.AdditiveNode(t[1], t[2], t[3])
@@ -422,7 +425,7 @@ def p_error(t):
 
 data = '''
     var
-    var1, var2 : integer;
+    c, var1, var2 : integer;
     arr1 : array [1..10] of integer;
     var3 : boolean;
     var4 : char;
@@ -462,7 +465,7 @@ data = '''
             b, asasas, asdafsf : char;
             rav
             c := f - 40;
-            if 20 = 20 then 
+            if true | false then 
                 begin
                 a := 20 + 30;
                 end
@@ -520,4 +523,7 @@ parser.parse(data)
 
 sm = SemanticAnalyzer(mytree)
 mytree.print_tree()
-sm.print_idents()
+cg = CodeGenerator(sm.idents, mytree)
+cg.set_instructions()
+cg.write()
+# sm.print_idents()
