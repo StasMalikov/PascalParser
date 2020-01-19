@@ -39,6 +39,38 @@ class CodeGenerator:
 
             if node.classtype == "for_block":
                 self.parce_for(node)
+                
+            if node.classtype == "while_block":
+                self.parce_while(node)
+
+            if node.classtype == "do_while_block":
+                self.parce_do_while(node)
+
+
+    def parce_do_while(self, node):
+        condition = self.tree.expr_list[node.condition_index]
+        instructoin = "while True:\n"
+        for index in node.body:
+            if index != "None":
+                tmp_node = self.tree.expr_list[index]
+                instructoin +=  self.tab + self.choose_def(tmp_node) + "\n"
+
+        instructoin += self.tab + "if not " + self.choose_def(condition) + ":\n" + self.tab*2 + "break"
+        
+        self.instructions.append(instructoin)
+        return instructoin
+
+
+    def parce_while(self, node):
+        condition = self.tree.expr_list[node.condition_index]
+        instructoin = "while " + self.choose_def(condition) + ":\n"
+        for index in node.body:
+            if index != "None":
+                tmp_node = self.tree.expr_list[index]
+                instructoin +=  self.tab + self.choose_def(tmp_node) + "\n"
+        
+        self.instructions.append(instructoin)
+        return instructoin
 
 
     def parce_for(self, node):
@@ -51,6 +83,21 @@ class CodeGenerator:
                 instructoin +=  self.tab + self.choose_def(tmp_node) + "\n"
         
         self.instructions.append(instructoin)
+        return instructoin
+
+
+    def parce_func_call(self, node):
+        instructoin = node.name + "("
+        lengh = len(node.params)
+        for i in range(lengh):
+            if i == lengh - 1:
+                instructoin += " " + node.params[i]
+            elif i == 0:
+                instructoin += node.params[i] + ","
+            else:
+                instructoin += " " + node.params[i] + ","
+        
+        instructoin += ")"
         return instructoin
 
 
@@ -123,7 +170,12 @@ class CodeGenerator:
             instructon += str(node.value1)
 
         if node.operator is not None:
-            instructon += " " + node.operator + " "
+            if node.operator == "function":
+                func_call = self.tree.expr_list[node.value1]
+                return self.choose_def(func_call)
+                 
+            else:
+                instructon += " " + node.operator + " "
 
         if node.value2 is not None:
             instructon += str(node.value2)
@@ -140,6 +192,9 @@ class CodeGenerator:
 
         if node.classtype == "assign":
             return self.parce_assign(node)
+
+        if node.classtype == "function_call":
+            return self.parce_func_call(node)
 
 
     def parce_func(self, node):

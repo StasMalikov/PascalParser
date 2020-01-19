@@ -478,6 +478,8 @@ data = '''
 
             MinNumber();
 
+            tt := MaxNumber(rr, tt);
+
             for i := 0 to 10 do 
                 begin
                 ttt := 55 * 100;
