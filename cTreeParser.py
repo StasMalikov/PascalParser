@@ -27,8 +27,8 @@ reserved = {
     'if': 'IF',
     'then': 'THEN',
     'else': 'ELSE',
-    'true': 'TRUE',
-    'false': 'FALSE',
+    'True': 'TRUE',
+    'False': 'FALSE',
     'for': 'FOR',
     'function': 'FUNCTION',
     'to': 'TO',
@@ -465,7 +465,7 @@ data = '''
             b, asasas, asdafsf : char;
             rav
             c := f - 40;
-            if true | false then 
+            if True | False then 
                 begin
                 a := 20 + 30;
                 end

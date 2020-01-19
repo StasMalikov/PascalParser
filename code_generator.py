@@ -34,6 +34,43 @@ class CodeGenerator:
             if node.classtype == "if_block":
                 self.parce_if(node)
 
+            if node.classtype == "procedure_call":
+                self.parce_proc_call(node)
+
+            if node.classtype == "for_block":
+                self.parce_for(node)
+
+
+    def parce_for(self, node):
+        condition = self.tree.expr_list[node.start_condition_index]
+        tmp_cond = self.choose_def(condition)
+        instructoin = tmp_cond + "\n" + "while " + tmp_cond.split()[0] + " <= " + str(node.end_number) + ":\n"
+        for index in node.body:
+            if index != "None":
+                tmp_node = self.tree.expr_list[index]
+                instructoin +=  self.tab + self.choose_def(tmp_node) + "\n"
+        
+        self.instructions.append(instructoin)
+        return instructoin
+
+
+    def parce_proc_call(self, node):
+        instructoin = node.name + "("
+        lengh = len(node.params)
+        for i in range(lengh):
+            if i == lengh - 1:
+                instructoin += " " + node.params[i]
+            elif i == 0:
+                instructoin += node.params[i] + ","
+            else:
+                instructoin += " " + node.params[i] + ","
+        
+        instructoin += ")"
+        self.instructions.append(instructoin)
+        return instructoin
+
+            
+
     def parce_if(self, node):
         instructoin = "if "
         condition = self.tree.expr_list[node.condition]
