@@ -40,7 +40,7 @@ class CodeGenerator:
                         else:
                             instructoin += " " + tmp.values[j] + ","
         
-        instructoin += "):\n"
+        instructoin += "):"
         self.instructions.append(instructoin)
         arr = []
         for node_index in node.body:
@@ -154,10 +154,10 @@ class CodeGenerator:
             for index in node.then_block:
                 if index != "None":
                     tmp_node = self.tree.expr_list[index]
-                    instructoin +=  self.tab + self.choose_def(tmp_node) + "\n"
+                    instructoin +=  (multiplier + 1)*self.tab + self.choose_def(tmp_node) + "\n"
 
         if node.else_block is not None:
-            instructoin += "else:\n"
+            instructoin +=  multiplier*self.tab + "else:\n"
             for index in node.else_block:
                 if index != "None":
                     tmp_node = self.tree.expr_list[index]
@@ -169,7 +169,7 @@ class CodeGenerator:
 
 
     def parce_assign(self, node, multiplier):
-        instructoin = multiplier*self.tab + node.ident + " = "
+        instructoin = multiplier*self.tab + self.decrement_arr(node.ident) + " = "
         body = self.tree.expr_list[node.body_index]
         instructoin += self.choose_def(body)
         return instructoin
@@ -194,7 +194,7 @@ class CodeGenerator:
     def parce_expr(self, node):
         instructon = ""
         if node.value1 is not None:
-            instructon += str(node.value1)
+            instructon += self.decrement_arr(str(node.value1))
 
         if node.operator is not None:
             if node.operator == "function":
@@ -205,9 +205,17 @@ class CodeGenerator:
                 instructon += " " + node.operator + " "
 
         if node.value2 is not None:
-            instructon += str(node.value2)
+            instructon += self.decrement_arr(str(node.value2))
 
         return instructon
+
+    def decrement_arr(self, string):
+        if len(string.split("[")) > 1:
+            res = string.split("[")
+            num = int(res[1].split("]")[0]) - 1
+            return res[0] + "[" + str(num) + "]"
+        else:
+            return string
             
 
     def choose_def(self, node, multiplier = 0):

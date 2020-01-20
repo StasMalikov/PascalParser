@@ -439,10 +439,30 @@ data = '''
             var3 : boolean;
             var4 : char;
             rav
-        if a >= b then
+        if a[1] >= b[1] then
             begin
-            max:= - a; 
+            max[8] := - a; 
             end;
+
+        
+            MaxNumber(rr, tt);
+
+            MinNumber();
+
+            tt := MaxNumber(rr, tt);
+
+            for i := 0 to 10 do 
+                begin
+                ttt := 55 * 100;
+                end;
+            while r > u do
+                begin
+                i := 60/6;
+                end;
+            do 
+            t := 50;
+            while i < 10 ;
+
         end;
 
 
@@ -493,28 +513,6 @@ data = '''
             while i < 10 ;
         end.
 '''
-
-# data = '''
-
-#     procedure MaxNumber(a,b: integer;);
-#         begin
-#         a := 10;
-#         end;
-
-#     function MaxNumber(a,b: integer;) : integer;
-#         begin
-#         a := 10;
-#         end;
-
-#     begin 
-#         var
-#         a, asap : integer;  
-#         b, asasas, asdafsf : char;
-#         rav
-#         a := 10 + 10;
-#     end.
-# '''
-
 
 parser = yacc.yacc()
 
