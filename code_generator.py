@@ -148,11 +148,13 @@ class CodeGenerator:
 
 
     def parce_func_call(self, node, multiplier):
-        if node.name == "Abc":
-            node.name = "abc"
+        if node.name == "Abs":
+            node.name = "abs"
 
+        if node.name == "Read":
+            node.name = "input"
 
-        instructoin = multiplier*self.tab + node.name + "("
+        instructoin = multiplier*self.tab + "int(" + node.name + "(" if node.name == "input" else multiplier*self.tab + node.name + "("
         lengh = len(node.params)
         for i in range(lengh):
             if i == lengh - 1:
@@ -162,7 +164,7 @@ class CodeGenerator:
             else:
                 instructoin += " " + node.params[i] + ","
         
-        instructoin += ")"
+        instructoin += "))" if node.name == "input" else ")"
         return instructoin
 
 
@@ -183,7 +185,9 @@ class CodeGenerator:
             else:
                 instructoin += " " + node.params[i] + ","
         
+        
         instructoin += ")"
+
         self.instructions.append(instructoin)
         return instructoin
 
@@ -261,8 +265,11 @@ class CodeGenerator:
     def decrement_arr(self, string):
         if len(string.split("[")) > 1:
             res = string.split("[")
-            num = int(res[1].split("]")[0]) - 1
-            return res[0] + "[" + str(num) + "]"
+            if res[1].split("]")[0].isdigit():
+                num = int(res[1].split("]")[0]) - 1
+                return res[0] + "[" + str(num) + "]"
+            else:
+                return res[0] + "[" + res[1].split("]")[0]+ "-1" + "]"
         else:
             return string
             

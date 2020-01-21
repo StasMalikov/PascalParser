@@ -1,93 +1,25 @@
 var
-c, var1, var2 : integer;
-arr1 : array [1..10] of integer;
-arr10 : array [1..15] of char;
-var3 : boolean;
-var4 : char;
+var1, i, j : integer;
+arr1 : array [1..3] of integer;
 rav
 
-procedure MaxNumber(a,b: integer;);
-    begin
-        var
-        var1, var2 : integer;
-        arr2 : array [1..10] of integer;
-        arr10 : array [1..15] of char;
-        arr15 : array [1..7] of boolean;
-        var3 : boolean;
-        var4 : char;
-        rav
-    if a[1] >= b[1] then
-        begin
-        max[8] := - a; 
-        end;
-
-    
-        MaxNumber(rr, tt);
-
-        MinNumber();
-
-        tt := MaxNumber(rr, tt);
-
-        for i := 0 to 10 do 
-            begin
-            ttt := 55 * 100;
-            end;
-        while r > u do
-            begin
-            i := 60/6;
-            end;
-        do 
-        t := 50;
-        while i < 10 ;
-
-    end;
-
-
-function MinNumber(a,b: integer;) : integer;
-    begin
-    if a <= b then
-        begin
-        max:= not a; 
-        end
-    else
-        begin
-        max:=b;
-        end;
-    MinNumber := 100;
-    end;
-
 begin 
-    var
-    a, asap : integer;  
-    b, asasas, asdafsf : char;
-    rav
-    c := asap - 40;
-    if True | False then 
-        begin
-        a := 20 + 30;
-        end
-    else
-        begin
-        c := asasas / 34;
-        end;
 
-    MaxNumber(rr, tt);
+    var1 := 0;
+    i := 1;
+    while i < 4 do 
+    begin 
+    arr1[i] := Read();
+    i := i + 1;
+    end;
 
-    MinNumber();
-    Write('ddd');
-    Read();
+    j := 1;
 
-    asap := MaxNumber(rr, tt);
+    while j < 4 do 
+    begin 
+    var1 := var1 + arr1[j];
+    j := j + 1;
+    end;
 
-    for i := 0 to 10 do 
-        begin
-        asap := 55 * 100;
-        end;
-    while asap > asap do
-        begin
-        i := 60/6;
-        end;
-    do 
-    i := 50;
-    while i < 10 ;
+    Write(var1);
 end.

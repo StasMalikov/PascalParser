@@ -434,10 +434,9 @@ parser.parse(data)
 
 
 sm = SemanticAnalyzer(mytree)
-if sm.semantics_check():
-    mytree.print_tree()
-    cg = CodeGenerator(sm.idents, mytree)
-    cg.set_instructions()
-    cg.write()
-    sm.print_idents()
+# if sm.semantics_check():
+mytree.print_tree()
+cg = CodeGenerator(sm.idents, mytree)
+cg.set_instructions()
+cg.write()
 # input()

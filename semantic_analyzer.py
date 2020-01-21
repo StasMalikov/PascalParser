@@ -275,7 +275,7 @@ class SemanticAnalyzer:
         read = my_ast_nodes.Function("Read", None, None, "char", None)
         inc = my_ast_nodes.Function("Inc", None, None, "integer", None)
         dec = my_ast_nodes.Function("Dec", None, None, "integer", None)
-        abc = my_ast_nodes.Function("Abc", None, None, "integer", None)
+        abc = my_ast_nodes.Function("Abs", None, None, "integer", None)
 
         self.idents.append(Ident(None, None, None, None, None, True, write, self.tree.expr_list))
         self.idents.append(Ident(None, None, None, None, None, True, read, self.tree.expr_list))
