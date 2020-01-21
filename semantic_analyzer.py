@@ -5,7 +5,6 @@ class SemanticAnalyzer:
         self.blocs = []
         self.global_index = 0
         self.set_idents()
-        # self.semantics_check()
 
     def semantics_check(self):
         for node in self.tree.nodes:
@@ -14,6 +13,7 @@ class SemanticAnalyzer:
                     return False
 
         print("Ошибок не обнаружено.")
+        return True
 
     def dot_block_check(self, body):
         for node in body:
@@ -23,18 +23,30 @@ class SemanticAnalyzer:
             elif node.classtype == "assign":
                 if not self.check_assign(node):
                     return False
+
+        return True
                 
-    def find_var(self, name, index = None):
-        for ident in self.idents:
-            if ident.name == name:
-                if index is not None:
-                    if (index > 0) and (index <= ident.len):
-                        return True
+    def find_var(self, name):
+        tmp = name.split('[')
+        if len(tmp) > 1:
+            for ident in self.idents:
+                if tmp[0] == ident.name:
+                    tmp2 = tmp[1].split("]")[0]
+                    if tmp2.isdigit():
+                        if int(tmp2) > 0 and int(tmp2) <= int(ident.len):
+                            return True
+                        else:
+                            print("Ошибка! Выход за пределы массива " + tmp[0])
+                            return False
                     else:
-                      return False
-                else:
+                        return self.find_var(tmp2)
+
+        else:    
+            for ident in self.idents:
+                if ident.name == name:
                     return True
 
+        print("Ошибка! Переменной '" + name + "' не существует.")
         return False
 
     def get_var_value(self, name, index = None):
@@ -49,8 +61,78 @@ class SemanticAnalyzer:
 
     def check_assign(self, node):
         if not self.find_var(node.ident):
-            print("Ошибка! Переменной '" + node.ident + "' не существует.")
             return False
+
+        body = self.tree.expr_list[node.body_index]
+        if not self.choose_func(body):
+            return False
+
+        return True
+
+    def check_additive(self, node):
+        if (node.left_index is not None) and (node.right_index is not None):
+            left = self.tree.expr_list[node.left_index]
+            right = self.tree.expr_list[node.right_index]
+            return True if self.choose_func(left) and self.choose_func(right) else False
+
+        else:
+            if (node.left_index is not None):
+                left = self.tree.expr_list[node.left_index]
+                return True if self.choose_func(left) else False
+
+            if (node.right_index is not None):
+                right = self.tree.expr_list[node.right_index]
+                return True if self.choose_func(right) else False
+
+    def check_expr(self, node):
+        if node.operator is not None:
+            if node.operator == "function":
+                func_call = self.tree.expr_list[node.value1]
+                return self.choose_func(func_call)
+
+        if (node.value1 is not None) and (node.value2 is not None):
+            return True if self.check_value(node.value1) and self.check_value(node.value2) else False
+
+        else:
+            if (node.value1 is not None):
+                return self.check_value(node.value1)
+
+            if (node.value2 is not None):
+                return self.check_value(node.value2)
+
+    def check_func_call(self, node):
+        for ident in self.idents:
+            if ident.name == node.name:
+                return True
+
+        print("Ошибка! Функция " + node.name + " не найдена.")
+        return False
+
+    def check_value(self, value):
+        if str(value).isdigit():
+            return True
+
+        elif len(value.split("'")) > 2:
+            return True
+
+        elif value == "True" or value == "False":
+            return True
+
+        else:
+            return self.find_var(value)
+
+    def choose_func(self, node):
+        if node.classtype == "additive":
+            return self.check_additive(node)
+
+        if node.classtype == "expr":
+            return self.check_expr(node)
+
+        if node.classtype == "assign":
+            return self.check_assign(node)
+
+        if node.classtype == "function_call":
+            return self.check_func_call(node)
 
     def print_idents(self):
         for item in self.idents:
@@ -117,7 +199,7 @@ class Ident:
                     self.body.append(node.body[i])
 
             for i in range(len(self.body)):
-                self.body[i] = expr_list['%s'% i]
+                self.body[i] = expr_list[self.body[i]]
                 if self.body[i].classtype == "ident":
                     for j in range(len(self.body[i].values)):
                         self.local_idents.append(Ident(self.body[i].values[j], self.body[i]._type, len(self.local_idents), "l", None, False, None, None))

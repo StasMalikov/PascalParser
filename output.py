@@ -1,4 +1,7 @@
 def MaxNumber( a,b):
+    arr2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    arr10 = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    arr15 = [False, False, False, False, False, False, False]
     if a[0] >= b[0]:
         max[7] = -a
 
@@ -16,6 +19,8 @@ def MaxNumber( a,b):
         t = 50
         if not i < 10:
             break
+
+
 def MinNumber( a,b):
     if a <= b:
         max = not a
@@ -23,14 +28,18 @@ def MinNumber( a,b):
         max = b
     MinNumber = 100
     return MinNumber
-c = f - 40
-if True | False:
+
+
+arr1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+arr10 = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+c = asap - 40
+if True or False:
     a = 20 + 30
 else:
     c = rr / 34
 MaxNumber(rr, tt)
 MinNumber()
-tt = MaxNumber(rr, tt)
+asap = MaxNumber(rr, tt)
 i = 0
 while i <= 10:
     ttt = 55 * 100

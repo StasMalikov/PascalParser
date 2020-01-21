@@ -9,7 +9,7 @@ class CodeGenerator:
     def set_instructions(self):
         for node in self.tree.nodes:
             if node.type == "block_dot":
-                self.parce_dot(node.body, 0)
+                self.parce_dot(node.body, 0, False)
 
             if node.type == "func_proc_block":
                 self.parce_func_proc(node.body)
@@ -42,16 +42,27 @@ class CodeGenerator:
         
         instructoin += "):"
         self.instructions.append(instructoin)
+        for ident in self.idents:
+            if ident.func and ident.name == node.name:
+                for l_ident in ident.local_idents:
+                    if l_ident.type == "array":
+                        self.instructions.append(self.init_arr(1, l_ident))
         arr = []
         for node_index in node.body:
             if node_index != "None":
                 arr.append(self.tree.expr_list[node_index]) 
         
-        self.parce_dot(arr, 1)
+        self.parce_dot(arr, 1, True)
         if func:
             self.instructions.append(self.tab + "return " + node.name)
+        self.instructions.append("\n")
 
-    def parce_dot(self, nodes, multiplier):
+    def parce_dot(self, nodes, multiplier, func):
+        if not func:
+            for ident in self.idents:
+                if ident.type == "array":
+                    self.instructions.append(self.init_arr(multiplier, ident)) 
+           
         for node in nodes:
             if node.classtype == "ident":
                 continue
@@ -73,6 +84,28 @@ class CodeGenerator:
 
             if node.classtype == "do_while_block":
                 self.parce_do_while(node, multiplier)
+
+        
+    def init_arr(self, multiplier, node):
+        instructoin = self.tab*multiplier + node.name + " = ["
+        for i in range(int(node.len)):
+            if i == int(node.len) - 1:
+                if node.arr_type == "integer":
+                    instructoin += "0"
+                elif node.arr_type == "boolean":
+                    instructoin += "False"
+                elif node.arr_type == "char":
+                    instructoin += "''"
+            else:
+                if node.arr_type == "integer":
+                    instructoin += "0, "
+                elif node.arr_type == "boolean":
+                    instructoin += "False, "
+                elif node.arr_type == "char":
+                    instructoin += "'', "
+        instructoin += "]"
+        return instructoin
+
 
 
     def parce_do_while(self, node, multiplier):
@@ -175,7 +208,6 @@ class CodeGenerator:
         return instructoin
         
 
-
     def parce_additive(self, node):
         instruction = ""
         if node.left_index is not None:
@@ -183,7 +215,14 @@ class CodeGenerator:
             instruction += self.choose_def(left)
 
         if node.op is not None:
-            instruction+= " " + node.op + " "
+            if node.op == "&":
+                instruction += " and "
+
+            elif node.op == "|":
+                instruction += " or "
+
+            else:
+                instruction+= " " + node.op + " "
 
         if node.right_index is not None:
             right = self.tree.expr_list[node.right_index]
@@ -200,7 +239,7 @@ class CodeGenerator:
             if node.operator == "function":
                 func_call = self.tree.expr_list[node.value1]
                 return self.choose_def(func_call)
-                 
+
             else:
                 instructon += " " + node.operator + " "
 

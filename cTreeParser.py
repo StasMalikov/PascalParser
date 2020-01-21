@@ -423,96 +423,8 @@ def p_error(t):
     global prog
     prog = None
 
-data = '''
-    var
-    c, var1, var2 : integer;
-    arr1 : array [1..10] of integer;
-    var3 : boolean;
-    var4 : char;
-    rav
-
-    procedure MaxNumber(a,b: integer;);
-        begin
-            var
-            var1, var2 : integer;
-            arr1 : array [1..10] of integer;
-            var3 : boolean;
-            var4 : char;
-            rav
-        if a[1] >= b[1] then
-            begin
-            max[8] := - a; 
-            end;
-
-        
-            MaxNumber(rr, tt);
-
-            MinNumber();
-
-            tt := MaxNumber(rr, tt);
-
-            for i := 0 to 10 do 
-                begin
-                ttt := 55 * 100;
-                end;
-            while r > u do
-                begin
-                i := 60/6;
-                end;
-            do 
-            t := 50;
-            while i < 10 ;
-
-        end;
-
-
-    function MinNumber(a,b: integer;) : integer;
-        begin
-        if a <= b then
-            begin
-            max:= not a; 
-            end
-        else
-            begin
-            max:=b;
-            end;
-        MinNumber := 100;
-        end;
-
-        begin 
-            var
-            a, asap : integer;  
-            b, asasas, asdafsf : char;
-            rav
-            c := f - 40;
-            if True | False then 
-                begin
-                a := 20 + 30;
-                end
-            else
-                begin
-                c := rr / 34;
-                end;
-
-            MaxNumber(rr, tt);
-
-            MinNumber();
-
-            tt := MaxNumber(rr, tt);
-
-            for i := 0 to 10 do 
-                begin
-                ttt := 55 * 100;
-                end;
-            while r > u do
-                begin
-                i := 60/6;
-                end;
-            do 
-            t := 50;
-            while i < 10 ;
-        end.
-'''
+file = open('input.txt')
+data = file.read()
 
 parser = yacc.yacc()
 
@@ -522,8 +434,10 @@ parser.parse(data)
 
 
 sm = SemanticAnalyzer(mytree)
-mytree.print_tree()
-cg = CodeGenerator(sm.idents, mytree)
-cg.set_instructions()
-cg.write()
-# sm.print_idents()
+if sm.semantics_check():
+    mytree.print_tree()
+    cg = CodeGenerator(sm.idents, mytree)
+    cg.set_instructions()
+    cg.write()
+    sm.print_idents()
+# input()
