@@ -20,9 +20,69 @@ class SemanticAnalyzer:
             if node.classtype == "ident":
                 continue
 
-            elif node.classtype == "assign":
+            if node.classtype == "assign":
                 if not self.check_assign(node):
                     return False
+
+            if node.classtype == "if_block":
+                if not self.check_if(node):
+                    return False
+            
+            if node.classtype == "procedure_call":
+                if not self.choose_func(node):
+                    return False
+
+            if node.classtype == "for_block":
+                if not self.check_for(node):
+                    return False
+
+        return True
+
+    def check_for(self, node):
+        condition = self.tree.expr_list[node.start_condition_index]
+        self.idents.append(Ident(condition.ident, "integer", 0, "for", None, False, None, None))
+
+        if not self.choose_func(condition):
+            return False
+
+        for index in node.body:
+            if index != "None":
+                tmp_node = self.tree.expr_list[index]
+                if not self.choose_func(tmp_node):
+                    return False
+
+        return True
+
+
+    def check_if(self, node):
+        condition = self.tree.expr_list[node.condition]
+        if not self.choose_func(condition):
+            return False
+        
+        if node.then_block is not None:
+            for index in node.then_block:
+                if index != "None":
+                    tmp_node = self.tree.expr_list[index]
+                    if not self.choose_func(tmp_node):
+                        return False
+
+        if node.else_block is not None:
+            for index in node.else_block:
+                if index != "None":
+                    tmp_node = self.tree.expr_list[index]
+                    if not self.choose_func(tmp_node):
+                        return False
+
+
+        return True
+
+    def check_assign(self, node):
+        if not self.find_var(node.ident):
+            return False
+
+        body = self.tree.expr_list[node.body_index]
+        if not self.choose_func(body):
+            return False
 
         return True
                 
@@ -59,15 +119,6 @@ class SemanticAnalyzer:
                     return ident.value
         return None
 
-    def check_assign(self, node):
-        if not self.find_var(node.ident):
-            return False
-
-        body = self.tree.expr_list[node.body_index]
-        if not self.choose_func(body):
-            return False
-
-        return True
 
     def check_additive(self, node):
         if (node.left_index is not None) and (node.right_index is not None):
@@ -108,6 +159,16 @@ class SemanticAnalyzer:
         print("Ошибка! Функция " + node.name + " не найдена.")
         return False
 
+
+    def check_proc_call(self, node):
+        for ident in self.idents:
+            if ident.name == node.name:
+                return True
+
+        print("Ошибка! Процедура " + node.name + " не найдена.")
+        return False
+
+
     def check_value(self, value):
         if str(value).isdigit():
             return True
@@ -133,6 +194,9 @@ class SemanticAnalyzer:
 
         if node.classtype == "function_call":
             return self.check_func_call(node)
+
+        if node.classtype == "procedure_call":
+            return self.check_proc_call(node)
 
     def print_idents(self):
         for item in self.idents:

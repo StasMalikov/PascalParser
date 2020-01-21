@@ -36,13 +36,13 @@ c = asap - 40
 if True or False:
     a = 20 + 30
 else:
-    c = rr / 34
+    c = asasas / 34
 MaxNumber(rr, tt)
 MinNumber()
 asap = MaxNumber(rr, tt)
 i = 0
 while i <= 10:
-    ttt = 55 * 100
+    asap = 55 * 100
 
 while r > u:
     i = 60 / 6

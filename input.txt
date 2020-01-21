@@ -68,7 +68,7 @@ begin
         end
     else
         begin
-        c := rr / 34;
+        c := asasas / 34;
         end;
 
     MaxNumber(rr, tt);
@@ -79,7 +79,7 @@ begin
 
     for i := 0 to 10 do 
         begin
-        ttt := 55 * 100;
+        asap := 55 * 100;
         end;
     while r > u do
         begin
