@@ -81,11 +81,11 @@ begin
         begin
         asap := 55 * 100;
         end;
-    while r > u do
+    while asap > asap do
         begin
         i := 60/6;
         end;
     do 
-    t := 50;
+    i := 50;
     while i < 10 ;
 end.

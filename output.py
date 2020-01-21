@@ -44,10 +44,10 @@ i = 0
 while i <= 10:
     asap = 55 * 100
 
-while r > u:
+while asap > asap:
     i = 60 / 6
 
 while True:
-    t = 50
+    i = 50
     if not i < 10:
         break

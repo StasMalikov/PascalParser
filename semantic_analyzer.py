@@ -36,6 +36,41 @@ class SemanticAnalyzer:
                 if not self.check_for(node):
                     return False
 
+            if node.classtype == "while_block":
+                if not self.check_while(node):
+                    return False
+
+            if node.classtype == "do_while_block":
+                if not self.check_dowhile(node):
+                    return False
+
+        return True
+
+
+    def check_dowhile(self, node):
+        condition = self.tree.expr_list[node.condition_index]
+        if not self.choose_func(condition):
+            return False
+
+        for index in node.body:
+            if index != "None":
+                tmp_node = self.tree.expr_list[index]
+                if not self.choose_func(tmp_node):
+                    return False
+
+        return True
+
+    def check_while(self, node):
+        condition = self.tree.expr_list[node.condition_index]
+        if not self.choose_func(condition):
+            return False
+
+        for index in node.body:
+            if index != "None":
+                tmp_node = self.tree.expr_list[index]
+                if not self.choose_func(tmp_node):
+                    return False
+
         return True
 
     def check_for(self, node):
