@@ -1,3 +1,5 @@
+import my_ast_nodes 
+
 class SemanticAnalyzer:
     def __init__(self, tree):
         self.tree = tree
@@ -269,6 +271,17 @@ class SemanticAnalyzer:
             elif self.tree.nodes[i].type == "func_proc_block":
                 for j in range(len(self.tree.nodes[i].body)):
                     self.idents.append(Ident(None, None, None, None, None, True, self.tree.nodes[i].body[j], self.tree.expr_list))
+        write = my_ast_nodes.Procedure("Write", None, None)
+        read = my_ast_nodes.Function("Read", None, None, "char", None)
+        inc = my_ast_nodes.Function("Inc", None, None, "integer", None)
+        dec = my_ast_nodes.Function("Dec", None, None, "integer", None)
+        abc = my_ast_nodes.Function("Abc", None, None, "integer", None)
+
+        self.idents.append(Ident(None, None, None, None, None, True, write, self.tree.expr_list))
+        self.idents.append(Ident(None, None, None, None, None, True, read, self.tree.expr_list))
+        self.idents.append(Ident(None, None, None, None, None, True, inc, self.tree.expr_list))
+        self.idents.append(Ident(None, None, None, None, None, True, dec, self.tree.expr_list))
+        self.idents.append(Ident(None, None, None, None, None, True, abc, self.tree.expr_list))
         
 
 class Ident:
@@ -293,9 +306,10 @@ class Ident:
                 self.return_type = node.return_type
             self.body = []
             self.local_idents = []
-            for i in range(len(node.body)):
-                if node.body[i] != 'None':
-                    self.body.append(node.body[i])
+            if node.body is not None:
+                for i in range(len(node.body)):
+                    if node.body[i] != 'None':
+                        self.body.append(node.body[i])
 
             for i in range(len(self.body)):
                 self.body[i] = expr_list[self.body[i]]

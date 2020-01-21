@@ -39,6 +39,8 @@ else:
     c = asasas / 34
 MaxNumber(rr, tt)
 MinNumber()
+print( 'ddd')
+input()
 asap = MaxNumber(rr, tt)
 i = 0
 while i <= 10:

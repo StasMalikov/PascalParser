@@ -345,6 +345,7 @@ class Procedure:
         self.classtype = "procedure"
         self.name = name
         self.param_list_index = None
+        self.body = []
         if body is not None:
             self.body = body.split(' ')
 

@@ -148,6 +148,10 @@ class CodeGenerator:
 
 
     def parce_func_call(self, node, multiplier):
+        if node.name == "Abc":
+            node.name = "abc"
+
+
         instructoin = multiplier*self.tab + node.name + "("
         lengh = len(node.params)
         for i in range(lengh):
@@ -163,6 +167,12 @@ class CodeGenerator:
 
 
     def parce_proc_call(self, node, multiplier):
+        if node.name == "Write":
+            node.name = "print"
+
+        if node.name == "Read":
+            node.name = "input"
+            
         instructoin = multiplier*self.tab + node.name + "("
         lengh = len(node.params)
         for i in range(lengh):

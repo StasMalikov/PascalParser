@@ -74,6 +74,8 @@ begin
     MaxNumber(rr, tt);
 
     MinNumber();
+    Write('ddd');
+    Read();
 
     asap := MaxNumber(rr, tt);
 
