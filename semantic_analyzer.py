@@ -117,7 +117,7 @@ class Ident:
                     self.body.append(node.body[i])
 
             for i in range(len(self.body)):
-                self.body[i] = expr_list['%s'% i]
+                self.body[i] = expr_list[self.body[i]]
                 if self.body[i].classtype == "ident":
                     for j in range(len(self.body[i].values)):
                         self.local_idents.append(Ident(self.body[i].values[j], self.body[i]._type, len(self.local_idents), "l", None, False, None, None))

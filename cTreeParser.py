@@ -427,6 +427,7 @@ data = '''
     var
     c, var1, var2 : integer;
     arr1 : array [1..10] of integer;
+    arr10 : array [1..15] of char;
     var3 : boolean;
     var4 : char;
     rav
@@ -435,7 +436,9 @@ data = '''
         begin
             var
             var1, var2 : integer;
-            arr1 : array [1..10] of integer;
+            arr2 : array [1..10] of integer;
+            arr10 : array [1..15] of char;
+            arr15 : array [1..7] of boolean;
             var3 : boolean;
             var4 : char;
             rav
@@ -526,4 +529,4 @@ mytree.print_tree()
 cg = CodeGenerator(sm.idents, mytree)
 cg.set_instructions()
 cg.write()
-# sm.print_idents()
+sm.print_idents()
